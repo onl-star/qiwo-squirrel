@@ -1,184 +1,172 @@
-# How to Rime with Qiwo
+# 齐我输入法 macOS 端安装指南
 
-> Instructions to build Qiwo - the Rime frontend for macOS
+## 系统要求
 
-## Manually build and install Qiwo
+- macOS 13.0 或更高版本
+- Xcode 16+（用于编译）
+- .NET 8 SDK（用于构建同步工具）
 
-### Prerequisites
+## 依赖安装
 
-Install **Xcode 14.0** or above from App Store, to build Qiwo as a Universal
-app.
+```bash
+# 安装 .NET 8 SDK
+brew install dotnet-sdk@8
 
-Install **cmake**.
-
-Download from https://cmake.org/download/
-
-or install from [Homebrew](http://brew.sh/):
-
-``` sh
-brew install cmake
+# 安装 Xcode（通过 App Store）
+# 安装 Command Line Tools
+xcode-select --install
 ```
 
-or install from [MacPorts](https://www.macports.org/):
+## 编译
 
-``` sh
-port install cmake
+### 1. 构建 qiwo-rime-sync
+
+```bash
+cd qiwo-sync-core
+# 为 Apple Silicon 编译
+dotnet publish src/qiwo-rime-sync/qiwo-rime-sync.csproj \
+  --configuration Release \
+  --runtime osx-arm64 \
+  --self-contained true \
+  -p:PublishSingleFile=true \
+  -p:PublishTrimmed=true \
+  -o publish/osx-arm64
+
+# 为 Intel Mac 编译
+dotnet publish src/qiwo-rime-sync/qiwo-rime-sync.csproj \
+  --configuration Release \
+  --runtime osx-x64 \
+  --self-contained true \
+  -p:PublishSingleFile=true \
+  -p:PublishTrimmed=true \
+  -o publish/osx-x64
 ```
 
-### Checkout the code
+### 2. 复制同步工具到应用包
 
-``` sh
-git clone --recursive https://github.com/rime/qiwo.git
-
-cd qiwo
+```bash
+mkdir -p qiwo-squirrel/qiwo-sync
+cp qiwo-sync-core/publish/osx-arm64/qiwo-rime-sync qiwo-squirrel/qiwo-sync/
+# 或针对 Intel Mac:
+# cp qiwo-sync-core/publish/osx-x64/qiwo-rime-sync qiwo-squirrel/qiwo-sync/
 ```
 
-Optionally, checkout Rime plugins (a list of GitHub repo slugs):
+### 3. 构建依赖
 
-``` sh
-bash librime/install-plugins.sh rime/librime-sample # ...
+```bash
+cd qiwo-squirrel
+
+# 构建 librime（如需要）
+make librime
+
+# 准备数据文件
+make data
+
+# 下载 Sparkle 框架
+make deps
 ```
 
-Popular plugins include [librime-lua](https://github.com/hchunhui/librime-lua), [librime-octagram](https://github.com/lotem/librime-octagram) and [librime-predict](https://github.com/rime/librime-predict)
+### 4. 编译 Qiwo.app
 
-### Shortcut: get the latest librime release
-
-You have the option to skip the following two sections - building Boost and
-librime, by downloading the latest librime binary from GitHub releases.
-
-``` sh
-bash ./action-install.sh
+```bash
+cd qiwo-squirrel
+make release
 ```
 
-When this is done, you may move on to [Build Qiwo](#build-qiwo).
+编译产物位于 `build/Build/Products/Release/Qiwo.app`。
 
-### Install Boost C++ libraries
+## 安装
 
-Choose one of the following options.
+```bash
+cd qiwo-squirrel
 
-**Option:** Download and install from source.
-
-``` sh
-export BUILD_UNIVERSAL=1
-
-bash librime/install-boost.sh
-
-export BOOST_ROOT="$(pwd)/librime/deps/boost-1.84.0"
+# 安装到系统输入法目录
+sudo make install-release
 ```
 
-Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
-universal macOS binaries. Skip this if building only for the native architecture.
+或者手动安装：
 
-After Boost source code is downloaded and a few compiled libraries are built,
-be sure to set shell variable `BOOST_ROOT` to its top level directory as above.
+```bash
+# 复制到系统输入法目录
+sudo cp -R build/Build/Products/Release/Qiwo.app "/Library/Input Methods/"
 
-You may also set `BOOST_ROOT` to an existing Boost source tree before this step.
+# 注册输入法
+"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --register-input-source
 
-**Option:** Install the current version form Homebrew:
+# 启用输入法
+"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --enable-input-source
 
-``` sh
-brew install boost
+# 选择输入法
+"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --select-input-source
 ```
 
-**Note:** with this option, the built Qiwo.app is not portable because it
-links to locally installed libraries from Homebrew.
+## 配置 WebDAV 同步
 
-Learn more about the implications of this at
-https://github.com/rime/librime/blob/master/README-mac.md#install-boost-c-libraries
+### 方式一：偏好设置窗口
 
-**Option:** Install from [MacPorts](https://www.macports.org/):
+1. 切换到齐我输入法
+2. 点击菜单栏的输入法图标 → **「WebDAV 设置…」**
+3. 填写：
+   - **Server URL**: WebDAV 服务器地址（如 `https://dav.example.com`）
+   - **Remote path**: 远程路径（默认 `qiwo-rime-sync`）
+   - **Username / Password**: WebDAV 凭据
+   - **Device ID**: 设备标识（默认自动获取）
+4. 点击 **「测试连接」** 验证配置
+5. 点击 **「保存」**
 
-``` sh
-port install boost -no_static
+### 方式二：环境变量
+
+```bash
+export QIWO_WEBDAV_URL="https://dav.example.com/qiwo-rime-sync"
+export QIWO_WEBDAV_USERNAME="username"
+export QIWO_WEBDAV_PASSWORD="password"
+export QIWO_DEVICE_ID="mac-main"
 ```
 
-### Build Qiwo
+环境变量优先级高于偏好设置。
 
-* Make sure you have updated all the dependencies. If you cloned qiwo with the command in this guide, you've already done it. But if not, this command will update submodules.
+## 使用同步
 
-```
-git submodule update --init --recursive
-```
+### 手动同步
 
-* There are a few environmental variables that you can define. Here's a list and possible values they may take:
+- 输入法菜单 → **「WebDAV 同步」**
+- 或命令行：`"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --webdav-sync`
 
-``` sh
-export BOOST_ROOT="path_to_boost" # required
-export DEV_ID="Your Apple ID name" # include this to codesign, optional
-export BUILD_UNIVERSAL=1 # set to build universal binary
-export PLUM_TAG=":preset” # or ":extra", optional, build with a set of plum formulae
-export ARCHS='arm64 x86_64' # optional, if not defined, only active arch is used
-export MACOSX_DEPLOYMENT_TARGET='13.0' # optional, lower version than 13.0 is not tested and may not work properly
-```
+### 命令行选项
 
-* With all dependencies ready, build `Qiwo.app`:
+```bash
+# 执行 WebDAV 同步
+Qiwo.app/Contents/MacOS/Qiwo --webdav-sync
 
-``` sh
-make
-```
+# 打开 WebDAV 设置窗口
+Qiwo.app/Contents/MacOS/Qiwo --webdav-sync-settings
 
-* You can either define the environment variables in your shell/terminal, or append them as arguments to the make command. For example:
+# 重新部署
+Qiwo.app/Contents/MacOS/Qiwo --reload
 
-``` sh
-# for Universal macOS App
-make ARCHS='arm64 x86_64' BUILD_UNIVERSAL=1
+# 显示帮助
+Qiwo.app/Contents/MacOS/Qiwo --help
 ```
 
-## Install it on your Mac
+## 数据存储位置
 
-### Make Package
+| 内容 | 路径 |
+|------|------|
+| Rime 用户配置 | `~/Library/Rime/` |
+| WebDAV 设置 | `~/Library/Rime/.qiwo-sync/webdav.plist` |
+| 同步清单 | `~/Library/Rime/.qiwo-sync/manifest.json` |
+| 冲突备份 | `~/Library/Rime/.qiwo-sync/backups/` |
+| 密码 | macOS Keychain |
 
-Just add `package` after `make`
+## 卸载
 
+```bash
+# 注销输入法
+"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --disable-input-source
+
+# 删除应用
+sudo rm -rf "/Library/Input Methods/Qiwo.app"
+
+# 删除用户数据（可选）
+rm -rf ~/Library/Rime
 ```
-make package ARCHS='arm64'
-```
-
-Define `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
-
-To make this work, you need a `Developer ID Installer: (your name/org)` and set your name/org as `DEV_ID` env variable. 
-
-To make notarization work, you also need to save your credential under the same name as above.
-
-```
-xcrun notarytool store-credentials 'your name/org'
-```
-
-You **don't** need to define `DEV_ID` if you don't intend to distribute the package.
-
-### Directly Install
-
-**You might need to precede with sudo, and without a logout, the App might not work properly. Direct install is not very recommended.**
-
-Once built, you can install and try it live on your Mac computer:
-
-``` sh
-# Qiwo as a Universal app
-make install
-```
-
-## Clean Up Artifacts
-
-After installation or after a failed attempt, you may want to start over. Before you do so, **make sure you have cleaned up artifacts from previous build.**
-
-To clean **Qiwo** artifacts, without touching dependencies, run:
-
-``` sh
-make clean
-```
-
-To clean up **dependencies**, including librime, librime plugins, plum and sparkle, run:
-
-``` sh
-make clean-deps
-```
-
-To clean up **packages**, run:
-
-``` sh
-make clean-package
-```
-
-If you want to clean all above, do all.
-
-That's it, a verbal journal. Thanks for riming with Qiwo.
