@@ -1,7 +1,26 @@
-.PHONY: all install deps release debug
+.PHONY: all install deps release debug setup
 
 all: release
 install: install-release
+
+# ── Auto-setup: ensure submodules exist ────────────────────────
+
+LIBRIME_CM = librime/CMakeLists.txt
+PLUM_MF = plum/Makefile
+SPARKLE_XP = Sparkle/Sparkle.xcodeproj
+
+setup:
+	@if [ ! -f $(LIBRIME_CM) ] || [ ! -f $(PLUM_MF) ] || [ ! -d $(SPARKLE_XP) ]; then \
+		echo "*** Missing submodules, initializing..."; \
+		if [ -f .gitmodules ] || [ -d .git ]; then \
+			git submodule update --init --recursive 2>/dev/null || true; \
+		fi; \
+		[ ! -f $(LIBRIME_CM) ] && git clone --depth 1 https://github.com/rime/librime.git librime; \
+		[ ! -f $(PLUM_MF) ]    && git clone --depth 1 https://github.com/rime/plum.git plum; \
+		[ ! -d $(SPARKLE_XP) ] && git clone --depth 1 https://github.com/sparkle-project/Sparkle.git Sparkle; \
+	fi
+
+deps: setup
 
 RIME_BIN_DIR = librime/dist/bin
 RIME_LIB_DIR = librime/dist/lib
