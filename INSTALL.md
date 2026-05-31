@@ -17,6 +17,28 @@ brew install dotnet-sdk@8
 xcode-select --install
 ```
 
+## 源码准备
+
+qiwo-squirrel 依赖三个子模块（librime、plum、Sparkle）。如果这些目录为空，需要先初始化：
+
+```bash
+cd qiwo-squirrel
+
+# 初始化子模块（首次构建必须）
+git submodule update --init --recursive
+
+# 如果 qiwo-squirrel 不是 git 仓库（是 copy 出来的），需要手动获取依赖
+if [ ! -f librime/CMakeLists.txt ]; then
+  git clone --depth 1 https://github.com/rime/librime.git librime
+fi
+if [ ! -f plum/Makefile ]; then
+  git clone --depth 1 https://github.com/rime/plum.git plum
+fi
+if [ ! -d Sparkle/Sparkle.xcodeproj ]; then
+  git clone --depth 1 https://github.com/sparkle-project/Sparkle.git Sparkle
+fi
+```
+
 ## 编译
 
 ### 1. 构建 qiwo-rime-sync
