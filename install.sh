@@ -36,6 +36,8 @@ if [ "$MACOS_MAJOR" -lt 13 ]; then
 fi
 log_ok "macOS $MACOS_VER"
 
+# ── 1a. Xcode Command Line Tools ──────────────────────────────
+
 if ! xcode-select -p &>/dev/null; then
     log_warn "未找到 Xcode Command Line Tools，正在安装..."
     xcode-select --install 2>/dev/null || true
@@ -43,6 +45,46 @@ if ! xcode-select -p &>/dev/null; then
     exit 0
 fi
 log_ok "Xcode Command Line Tools 已就绪"
+
+# ── 1b. Homebrew ─────────────────────────────────────────────
+
+NEED_BREW=false
+if ! command -v brew &>/dev/null; then
+    NEED_BREW=true
+fi
+
+# ── 1c. 构建工具检查与自动安装 ──────────────────────────────
+
+MISSING_TOOLS=()
+
+check_tool() {
+    if ! command -v "$1" &>/dev/null; then
+        MISSING_TOOLS+=("$1")
+    fi
+}
+
+check_tool cmake
+check_tool git
+
+if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
+    if [ "$NEED_BREW" = true ]; then
+        log_warn "缺少构建工具: ${MISSING_TOOLS[*]}，需要先安装 Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        # 激活 brew (Apple Silicon 和 Intel 路径不同)
+        if [ -f /opt/homebrew/bin/brew ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [ -f /usr/local/bin/brew ]; then
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+        NEED_BREW=false
+    fi
+
+    log_info "正在安装缺失工具: ${MISSING_TOOLS[*]}..."
+    brew install "${MISSING_TOOLS[@]}"
+fi
+
+log_ok "构建工具已就绪 (cmake: $(cmake --version 2>/dev/null | head -1 | awk '{print $NF}'), git: $(git --version | awk '{print $NF}'))"
 
 # ── 2. 可选依赖检查 (.NET SDK for sync) ──────────────────────
 
