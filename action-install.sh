@@ -32,6 +32,7 @@ cp -R download/share/opencc librime/share/
 cp -R download/Sparkle.framework Frameworks/
 
 # skip building librime and opencc-data; use downloaded artifacts
+mkdir -p lib bin
 make copy-rime-binaries copy-opencc-data
 
 echo "SQUIRREL_BUNDLED_RECIPES=${SQUIRREL_BUNDLED_RECIPES}"
