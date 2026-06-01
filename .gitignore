@@ -4,8 +4,9 @@ bin/*
 lib/*
 !lib/.placeholder
 
-# Frameworks (downloaded)
-Sparkle/
+# Frameworks (downloaded, keep .gitkeep)
+Sparkle/*
+!Sparkle/.gitkeep
 
 # macOS
 .DS_Store
