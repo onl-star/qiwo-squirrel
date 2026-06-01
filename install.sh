@@ -125,7 +125,6 @@ if [ "$HAS_DOTNET" = true ] && [ -d "$SYNC_CORE_DIR" ]; then
         --runtime "$RID" \
         --self-contained true \
         -p:PublishSingleFile=true \
-        -p:PublishTrimmed=true \
         -o "publish/$RID"
 
     mkdir -p "$SCRIPT_DIR/qiwo-sync"
