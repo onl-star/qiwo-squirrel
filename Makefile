@@ -183,15 +183,18 @@ SQUIRREL_APP_ROOT = $(DSTROOT)/Qiwo.app
 .PHONY: permission-check install-debug install-release
 
 permission-check:
-	[ -w "$(DSTROOT)" ] && [ -w "$(SQUIRREL_APP_ROOT)" ] || sudo chown -R ${USER} "$(DSTROOT)"
+	[ -w "$(DSTROOT)" ] || sudo chown ${USER} "$(DSTROOT)" 2>/dev/null || true
+	[ ! -d "$(SQUIRREL_APP_ROOT)" ] || [ -w "$(SQUIRREL_APP_ROOT)" ] || sudo chown -R ${USER} "$(SQUIRREL_APP_ROOT)" 2>/dev/null || true
 
 install-debug: debug permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
+	rm -rf "$(DSTROOT)/Squirrel.app"
 	cp -R $(DERIVED_DATA_PATH)/Build/Products/Debug/Qiwo.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" RIME_NO_PREBUILD=1 bash scripts/postinstall
 
 install-release: release permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
+	rm -rf "$(DSTROOT)/Squirrel.app"
 	cp -R $(DERIVED_DATA_PATH)/Build/Products/Release/Qiwo.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" bash scripts/postinstall
 
