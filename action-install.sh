@@ -37,7 +37,8 @@ make copy-rime-binaries copy-opencc-data
 
 echo "SQUIRREL_BUNDLED_RECIPES=${SQUIRREL_BUNDLED_RECIPES}"
 
-git submodule update --init plum
+(cd squirrel && git submodule update --init plum)
+ln -sf squirrel/plum plum
 # install Rime recipes
 rime_dir=plum/output bash plum/rime-install ${SQUIRREL_BUNDLED_RECIPES}
 make copy-plum-data
