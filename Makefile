@@ -15,7 +15,7 @@ setup:
 		if [ -f .gitmodules ] || [ -d .git ]; then \
 			git submodule update --init --recursive 2>/dev/null || true; \
 		fi; \
-		[ ! -f $(LIBRIME_CM) ] && git clone --depth 1 https://github.com/rime/librime.git librime; \
+		[ ! -f $(LIBRIME_CM) ] && git clone --depth 1 https://github.com/rime/librime.git librime && cd librime && git submodule update --init --recursive --depth 1; \
 		[ ! -f $(PLUM_MF) ]    && git clone --depth 1 https://github.com/rime/plum.git plum; \
 		[ ! -d $(SPARKLE_XP) ] && git clone --depth 1 https://github.com/sparkle-project/Sparkle.git Sparkle; \
 	fi
@@ -58,7 +58,10 @@ $(RIME_LIBRARY):
 	$(MAKE) librime
 
 $(RIME_DEPS):
-	$(MAKE) -C librime deps
+	@mkdir -p .bin; \
+	printf '#!/bin/sh\nexec /usr/bin/python3 "$$@"\n' > .bin/python; \
+	chmod +x .bin/python
+	PATH="$$PWD/.bin:$$PATH" $(MAKE) -C librime deps NOPARALLEL=1 -j$$(sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
 librime: $(RIME_DEPS)
 	$(MAKE) -C librime release install
@@ -66,7 +69,7 @@ librime: $(RIME_DEPS)
 
 copy-rime-binaries:
 	cp -L $(RIME_LIB_DIR)/$(RIME_LIBRARY_FILE_NAME) lib/
-	cp -pR $(RIME_LIB_DIR)/rime-plugins lib/
+	cp -pR $(RIME_LIB_DIR)/rime-plugins lib/ 2>/dev/null || true
 	cp $(RIME_BIN_DIR)/rime_deployer bin/
 	cp $(RIME_BIN_DIR)/rime_dict_manager bin/
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_deployer
@@ -131,7 +134,7 @@ debug: $(DEPS_CHECK)
 .PHONY: sparkle copy-sparkle-framework
 
 $(SPARKLE_FRAMEWORK):
-	git submodule update --init --recursive Sparkle
+	git submodule update --init --recursive Sparkle 2>/dev/null || true
 	$(MAKE) sparkle
 
 sparkle:

@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2C6B9F9D2BCD086700E327DF /* librime-lua.dylib in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F9A2BCD086700E327DF /* librime-lua.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		2C6B9F9E2BCD086700E327DF /* librime-octagram.dylib in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F9B2BCD086700E327DF /* librime-octagram.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		2C6B9F9F2BCD086700E327DF /* librime-predict.dylib in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F9C2BCD086700E327DF /* librime-predict.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */; };
 		441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */; };
 		441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */; };
@@ -20,6 +17,13 @@
 		441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636B22B7E90D006DCCDD /* stroke.schema.yaml */; };
 		441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */; };
 		441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */; };
+441E639322B7E96F006DCCDD /* quick5.supplement.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639422B7E90C006DCCDD /* quick5.supplement.dict.yaml */; };
+441E639122B7E96F006DCCDD /* quick5.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639222B7E90C006DCCDD /* quick5.schema.yaml */; };
+441E638922B7E96F006DCCDD /* quick5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639022B7E90C006DCCDD /* quick5.dict.yaml */; };
+441E638722B7E96F006DCCDD /* cangjie5.stem.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638822B7E90C006DCCDD /* cangjie5.stem.dict.yaml */; };
+441E638522B7E96F006DCCDD /* cangjie5.extended.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638622B7E90C006DCCDD /* cangjie5.extended.dict.yaml */; };
+441E638322B7E96F006DCCDD /* cangjie5.base.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638422B7E90C006DCCDD /* cangjie5.base.dict.yaml */; };
+441E638122B7E96F006DCCDD /* cangjie5_char.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* cangjie5_char.dict.yaml */; };
 		441E638122B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* detenele.schema.yaml */; };
 		441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */; };
 		442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };
@@ -84,6 +88,9 @@
 		B397712B2BEE4C160093A49B /* QiwoPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712A2BEE4C160093A49B /* QiwoPanel.swift */; };
 		B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712C2BEEB39D0093A49B /* InputSource.swift */; };
 		B397712F2BEECBED0093A49B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712E2BEECBED0093A49B /* Main.swift */; };
+		88D0027205BD4BCDA61BFFDC /* QiwoWebDavSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */; };
+		3125F370C8554288B985389E /* QiwoWebDavSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */; };
+		3A542DD4B11746BC89E5E3B0 /* QiwoSyncSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */; };
 		B39771312BEEE4540093A49B /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771302BEEE4540093A49B /* InfoPlist.xcstrings */; };
 		B39771332BEEE4540093A49B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771322BEEE4540093A49B /* Localizable.xcstrings */; };
 		B3EF08EA2F17125E00433A45 /* Rime.icon in Resources */ = {isa = PBXBuildFile; fileRef = B3EF08E92F17125E00433A45 /* Rime.icon */; };
@@ -93,19 +100,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		2C6B9F992BCD083D00E327DF /* Copy Rime plugins */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "rime-plugins";
-			dstSubfolderSpec = 10;
-			files = (
-				2C6B9F9D2BCD086700E327DF /* librime-lua.dylib in Copy Rime plugins */,
-				2C6B9F9E2BCD086700E327DF /* librime-octagram.dylib in Copy Rime plugins */,
-				2C6B9F9F2BCD086700E327DF /* librime-predict.dylib in Copy Rime plugins */,
-			);
-			name = "Copy Rime plugins";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4407F3CA14EC079A001329FE /* Copy opencc Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -162,6 +156,13 @@
 				441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */,
 				441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */,
 				441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */,
+441E639322B7E96F006DCCDD /* quick5.supplement.dict.yaml in Copy Shared Support Files */,
+441E639122B7E96F006DCCDD /* quick5.schema.yaml in Copy Shared Support Files */,
+441E638922B7E96F006DCCDD /* quick5.dict.yaml in Copy Shared Support Files */,
+441E638722B7E96F006DCCDD /* cangjie5.stem.dict.yaml in Copy Shared Support Files */,
+441E638522B7E96F006DCCDD /* cangjie5.extended.dict.yaml in Copy Shared Support Files */,
+441E638322B7E96F006DCCDD /* cangjie5.base.dict.yaml in Copy Shared Support Files */,
+441E638122B7E96F006DCCDD /* cangjie5_char.dict.yaml in Copy Shared Support Files */,
 				441E638122B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */,
 				441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */,
 				44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */,
@@ -210,12 +211,16 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		2C6B9F9A2BCD086700E327DF /* librime-lua.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "librime-lua.dylib"; path = "lib/rime-plugins/librime-lua.dylib"; sourceTree = "<group>"; };
-		2C6B9F9B2BCD086700E327DF /* librime-octagram.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "librime-octagram.dylib"; path = "lib/rime-plugins/librime-octagram.dylib"; sourceTree = "<group>"; };
-		2C6B9F9C2BCD086700E327DF /* librime-predict.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "librime-predict.dylib"; path = "lib/rime-plugins/librime-predict.dylib"; sourceTree = "<group>"; };
 		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
 		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
 		441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.schema.yaml; path = data/plum/terra_pinyin.schema.yaml; sourceTree = "<group>"; };
+441E639422B7E90C006DCCDD /* quick5.supplement.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = quick5.supplement.dict.yaml; path = data/plum/quick5.supplement.dict.yaml; sourceTree = "<group>"; };
+441E639222B7E90C006DCCDD /* quick5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = quick5.schema.yaml; path = data/plum/quick5.schema.yaml; sourceTree = "<group>"; };
+441E639022B7E90C006DCCDD /* quick5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = quick5.dict.yaml; path = data/plum/quick5.dict.yaml; sourceTree = "<group>"; };
+441E638822B7E90C006DCCDD /* cangjie5.stem.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.stem.dict.yaml; path = data/plum/cangjie5.stem.dict.yaml; sourceTree = "<group>"; };
+441E638622B7E90C006DCCDD /* cangjie5.extended.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.extended.dict.yaml; path = data/plum/cangjie5.extended.dict.yaml; sourceTree = "<group>"; };
+441E638422B7E90C006DCCDD /* cangjie5.base.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.base.dict.yaml; path = data/plum/cangjie5.base.dict.yaml; sourceTree = "<group>"; };
+441E638222B7E90C006DCCDD /* cangjie5_char.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5_char.dict.yaml; path = data/plum/cangjie5_char.dict.yaml; sourceTree = "<group>"; };
 		441E638222B7E90C006DCCDD /* detenele.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = detenele.schema.yaml; path = data/plum/detenele.schema.yaml; sourceTree = "<group>"; };
 		441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin_12345.schema.yaml; path = data/plum/terra_pinyin_12345.schema.yaml; sourceTree = "<group>"; };
 		441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5_express.schema.yaml; path = data/plum/cangjie5_express.schema.yaml; sourceTree = "<group>"; };
@@ -291,6 +296,10 @@
 		B397712A2BEE4C160093A49B /* QiwoPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoPanel.swift; path = sources/QiwoPanel.swift; sourceTree = "<group>"; };
 		B397712C2BEEB39D0093A49B /* InputSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InputSource.swift; path = sources/InputSource.swift; sourceTree = "<group>"; };
 		B397712E2BEECBED0093A49B /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Main.swift; path = sources/Main.swift; sourceTree = "<group>"; };
+		4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoWebDavSettings.swift; path = sources/QiwoWebDavSettings.swift; sourceTree = "<group>"; };
+		1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoWebDavSync.swift; path = sources/QiwoWebDavSync.swift; sourceTree = "<group>"; };
+		F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoSyncSettingsController.swift; path = sources/QiwoSyncSettingsController.swift; sourceTree = "<group>"; };
+
 		B39771302BEEE4540093A49B /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = InfoPlist.xcstrings; path = resources/InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B39771322BEEE4540093A49B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = resources/Localizable.xcstrings; sourceTree = "<group>"; };
 		B3EF08E92F17125E00433A45 /* Rime.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Rime.icon; sourceTree = "<group>"; };
@@ -322,6 +331,9 @@
 				B39771222BECEA150093A49B /* MacOSKeyCodes.swift */,
 				B397712C2BEEB39D0093A49B /* InputSource.swift */,
 				B397712E2BEECBED0093A49B /* Main.swift */,
+				4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */,
+				1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */,
+				F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */,
 				B39771262BED9B250093A49B /* QiwoTheme.swift */,
 				B397712A2BEE4C160093A49B /* QiwoPanel.swift */,
 				B39771282BEDAF4A0093A49B /* QiwoView.swift */,
@@ -364,9 +376,6 @@
 		29B97314FDCFA39411CA2CEA /* Qiwo */ = {
 			isa = PBXGroup;
 			children = (
-				2C6B9F9A2BCD086700E327DF /* librime-lua.dylib */,
-				2C6B9F9B2BCD086700E327DF /* librime-octagram.dylib */,
-				2C6B9F9C2BCD086700E327DF /* librime-predict.dylib */,
 				442C648F1F7A40180027EFBE /* bin */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
@@ -477,6 +486,13 @@
 				441E636B22B7E90D006DCCDD /* stroke.schema.yaml */,
 				441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */,
 				441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */,
+441E639422B7E90C006DCCDD /* quick5.supplement.dict.yaml */,
+441E639222B7E90C006DCCDD /* quick5.schema.yaml */,
+441E639022B7E90C006DCCDD /* quick5.dict.yaml */,
+441E638822B7E90C006DCCDD /* cangjie5.stem.dict.yaml */,
+441E638622B7E90C006DCCDD /* cangjie5.extended.dict.yaml */,
+441E638422B7E90C006DCCDD /* cangjie5.base.dict.yaml */,
+441E638222B7E90C006DCCDD /* cangjie5_char.dict.yaml */,
 				441E638222B7E90C006DCCDD /* detenele.schema.yaml */,
 				441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */,
 				7B5488211D2DAAD10056A1BE /* default.yaml */,
@@ -505,7 +521,6 @@
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
-				2C6B9F992BCD083D00E327DF /* Copy Rime plugins */,
 				44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */,
 				4407F3CA14EC079A001329FE /* Copy opencc Files */,
 				44E21A8D16A653AC00C2B08F /* CopyFiles */,
@@ -584,6 +599,9 @@
 				B38E9B952BEAFEFD0036ABEF /* QiwoInputController.swift in Sources */,
 				B39771252BED899F0093A49B /* QiwoConfig.swift in Sources */,
 				B397712F2BEECBED0093A49B /* Main.swift in Sources */,
+				88D0027205BD4BCDA61BFFDC /* QiwoWebDavSettings.swift in Sources */,
+				3125F370C8554288B985389E /* QiwoWebDavSync.swift in Sources */,
+				3A542DD4B11746BC89E5E3B0 /* QiwoSyncSettingsController.swift in Sources */,
 				B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */,
 				B397712B2BEE4C160093A49B /* QiwoPanel.swift in Sources */,
 				B38E9B912BE9AE1E0036ABEF /* QiwoApplicationDelegate.swift in Sources */,
@@ -598,7 +616,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = Rime;
+				ASSETCATALOG_COMPILER_APPICON_NAME = QiwoIcon;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_FRAMEWORKS = AppKit;
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -655,7 +673,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = Rime;
+				ASSETCATALOG_COMPILER_APPICON_NAME = QiwoIcon;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_FRAMEWORKS = AppKit;
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;

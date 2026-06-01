@@ -19,3 +19,7 @@ package/*.xml
 *~
 .*.swp
 .DS_Store
+Sparkle/
+librime/
+plum/
+.bin/
