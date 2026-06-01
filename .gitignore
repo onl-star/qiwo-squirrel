@@ -1,0 +1,13 @@
+# Build outputs (keep .placeholder)
+bin/*
+!bin/.placeholder
+lib/*
+!lib/.placeholder
+
+# Frameworks (downloaded)
+Sparkle/
+
+# macOS
+.DS_Store
+*.xcworkspace/
+xcuserdata/
