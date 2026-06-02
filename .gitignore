@@ -19,8 +19,6 @@ package/*.xml
 *~
 .*.swp
 .DS_Store
-Sparkle/
-librime/
-plum/
+# submodules tracked by git regardless of ignore rules
 .bin/
 qiwo-sync/
