@@ -2,9 +2,9 @@ import Foundation
 
 final class QiwoWebDavSync {
   enum Mode: String {
-    case sync = "sync"
-    case push = "push"
-    case pull = "pull"
+    case sync
+    case push
+    case pull
   }
 
   private let settings: QiwoWebDavSettings
@@ -32,7 +32,7 @@ final class QiwoWebDavSync {
       mode.rawValue,
       "--frontend", "squirrel",
       "--rime-user-dir", userDir,
-      "--remote-url", url,
+      "--remote-url", url
     ]
 
     if !settings.username.isEmpty {

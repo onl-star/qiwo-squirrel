@@ -51,17 +51,17 @@ final class QiwoSyncSettingsController: NSWindowController {
       NSLocalizedString("Remote path:", comment: ""),
       NSLocalizedString("Username:", comment: ""),
       NSLocalizedString("Password:", comment: ""),
-      NSLocalizedString("Device ID:", comment: ""),
+      NSLocalizedString("Device ID:", comment: "")
     ]
     let fields: [NSTextField] = [
-      serverUrlField, remotePathField, usernameField, passwordField, deviceIdField,
+      serverUrlField, remotePathField, usernameField, passwordField, deviceIdField
     ]
     let placeholders = [
       "https://dav.example.com",
       "qiwo-rime-sync",
       "",
       "",
-      Host.current().localizedName ?? "mac",
+      Host.current().localizedName ?? "mac"
     ]
 
     for i in 0..<5 {
