@@ -147,6 +147,9 @@
 #define XK_KP_8         0xffb8
 #define XK_KP_9         0xffb9
 
+#define XK_C 0x043
+#define XK_asciitilde   0x07e
+
 #define XK_section      0x0a7
 #define XK_yen          0x0a5
 
