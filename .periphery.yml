@@ -1,6 +1,6 @@
-project: Squirrel.xcodeproj
+project: Qiwo.xcodeproj
 schemes:
-- Squirrel
+- Qiwo
 targets:
-- Squirrel
+- Qiwo
 format: github-actions
