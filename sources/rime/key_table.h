@@ -104,7 +104,49 @@
 #define XK_y 0x079
 #define XK_z 0x07a
 
-#define XK_F 0x046
+#define XK_F1           0xffbe
+#define XK_F2           0xffbf
+#define XK_F3           0xffc0
+#define XK_F4           0xffc1
+#define XK_F5           0xffc2
+#define XK_F6           0xffc3
+#define XK_F7           0xffc4
+#define XK_F8           0xffc5
+#define XK_F9           0xffc6
+#define XK_F10          0xffc7
+#define XK_F11          0xffc8
+#define XK_F12          0xffc9
+#define XK_F13          0xffca
+#define XK_F14          0xffcb
+#define XK_F15          0xffcc
+#define XK_F16          0xffcd
+#define XK_F17          0xffce
+#define XK_F18          0xffcf
+#define XK_F19          0xffd0
+#define XK_F20          0xffd1
+
+#define XK_0 0x030
+#define XK_1 0x031
+#define XK_2 0x032
+#define XK_3 0x033
+#define XK_4 0x034
+#define XK_5 0x035
+#define XK_6 0x036
+#define XK_7 0x037
+#define XK_8 0x038
+#define XK_9 0x039
+
+#define XK_KP_0         0xffb0
+#define XK_KP_1         0xffb1
+#define XK_KP_2         0xffb2
+#define XK_KP_3         0xffb3
+#define XK_KP_4         0xffb4
+#define XK_KP_5         0xffb5
+#define XK_KP_6         0xffb6
+#define XK_KP_7         0xffb7
+#define XK_KP_8         0xffb8
+#define XK_KP_9         0xffb9
+
 #define XK_section      0x0a7
 #define XK_yen          0x0a5
 
