@@ -34,8 +34,10 @@ cp -R download/Sparkle.framework Frameworks/
 # pre-built dist provides binaries only; source headers come from the submodule
 # the CI workflow initializes librime submodule before this script runs
 # replace key_table.h with local version that doesn't depend on X11
+# also add _stdbool type shim for API compatibility
 cp sources/rime/key_table.h librime/src/rime/key_table.h 2>/dev/null || true
 cp sources/rime/key_table.h librime/include/rime/key_table.h 2>/dev/null || true
+cp sources/rime/qiwo_rime_shim.h librime/include/rime/qiwo_rime_shim.h 2>/dev/null || true
 
 # skip building librime and opencc-data; use downloaded artifacts
 mkdir -p lib bin
