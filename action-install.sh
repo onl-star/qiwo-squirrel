@@ -40,9 +40,11 @@ make copy-rime-binaries copy-opencc-data
 
 echo "SQUIRREL_BUNDLED_RECIPES=${SQUIRREL_BUNDLED_RECIPES}"
 
-git submodule update --init plum
-make -C plum
-make copy-plum-data
-if [ -n "${SQUIRREL_BUNDLED_RECIPES}" ]; then
-  rime_dir=plum/output bash plum/rime-install ${SQUIRREL_BUNDLED_RECIPES}
+git submodule update --init plum 2>/dev/null || true
+if [ -f plum/Makefile ]; then
+  make -C plum
+  make copy-plum-data
+  if [ -n "${SQUIRREL_BUNDLED_RECIPES}" ]; then
+    rime_dir=plum/output bash plum/rime-install ${SQUIRREL_BUNDLED_RECIPES}
+  fi
 fi
