@@ -5,6 +5,7 @@ final class QiwoWebDavSync {
     case sync
     case push
     case pull
+    case syncUserDict = "sync-user-dict"
   }
 
   private let settings: QiwoWebDavSettings

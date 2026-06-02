@@ -55,6 +55,7 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
   func applicationWillFinishLaunching(_ notification: Notification) {
     panel = QiwoPanel(position: .zero)
     addObservers()
+    startAutoSync()
   }
 
   func applicationWillTerminate(_ notification: Notification) {
@@ -79,6 +80,7 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
   // MARK: - WebDAV sync
 
   private var webdavSettingsController: QiwoSyncSettingsController?
+  private var autoSyncTimer: Timer?
 
   func qiwoWebDavSync() {
     let settings = QiwoWebDavSettings.load()
@@ -95,6 +97,47 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
           ? "WebDAV sync failed (exit code \(result.exitCode))."
           : result.output
         QiwoApplicationDelegate.showMessage(msgText: msg)
+      }
+    }
+  }
+
+  func startAutoSync() {
+    let settings = QiwoWebDavSettings.load()
+    guard settings.autoSync, settings.syncIntervalMinutes > 0 else {
+      stopAutoSync()
+      return
+    }
+
+    let interval = TimeInterval(settings.syncIntervalMinutes * 60)
+    autoSyncTimer?.invalidate()
+    autoSyncTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+      self?.performAutoSync()
+    }
+    // 立即执行一次
+    performAutoSync()
+  }
+
+  func stopAutoSync() {
+    autoSyncTimer?.invalidate()
+    autoSyncTimer = nil
+  }
+
+  private func performAutoSync() {
+    // 先导出词库
+    _ = rimeAPI.sync_user_data()
+
+    let settings = QiwoWebDavSettings.load()
+    let password = QiwoKeychain.loadPassword()
+    let sync = QiwoWebDavSync(settings: settings, password: password)
+
+    DispatchQueue.global(qos: .utility).async {
+      let result = sync.run(mode: .syncUserDict)
+      if result.success {
+        // 导入词库
+        _ = self.rimeAPI.sync_user_data()
+        print("Auto sync user dict completed")
+      } else {
+        print("Auto sync user dict failed: \(result.output)")
       }
     }
   }

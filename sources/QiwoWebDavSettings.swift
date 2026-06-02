@@ -6,6 +6,8 @@ struct QiwoWebDavSettings: Codable {
   var remotePath: String = "qiwo-rime-sync"
   var username: String = ""
   var deviceId: String = ""
+  var autoSync: Bool = false
+  var syncIntervalMinutes: Int = 60
 
   static let defaultRemotePath = "qiwo-rime-sync"
 

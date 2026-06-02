@@ -12,6 +12,9 @@ final class QiwoSyncSettingsController: NSWindowController {
   private let usernameField = NSTextField()
   private let passwordField = NSSecureTextField()
   private let deviceIdField = NSTextField()
+  private let autoSyncCheckbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+  private let intervalField = NSTextField()
+  private let intervalLabel = NSTextField()
   private let statusLabel = NSTextField()
   private let testButton = NSButton()
   private let saveButton = NSButton()
@@ -24,7 +27,7 @@ final class QiwoSyncSettingsController: NSWindowController {
     currentPassword = QiwoKeychain.loadPassword()
 
     let window = NSWindow(
-      contentRect: NSRect(x: 0, y: 0, width: 480, height: 340),
+      contentRect: NSRect(x: 0, y: 0, width: 480, height: 400),
       styleMask: [.titled, .closable, .miniaturizable],
       backing: .buffered,
       defer: false
@@ -74,6 +77,26 @@ final class QiwoSyncSettingsController: NSWindowController {
       fld.placeholderString = placeholders[i]
       content.addSubview(fld)
     }
+
+    // Auto-sync controls
+    autoSyncCheckbox.title = NSLocalizedString("Auto-sync user dictionary", comment: "")
+    autoSyncCheckbox.frame = NSRect(x: 120, y: 130, width: 250, height: 24)
+    autoSyncCheckbox.state = settings.autoSync ? .on : .off
+    content.addSubview(autoSyncCheckbox)
+
+    intervalLabel.stringValue = NSLocalizedString("Interval (min):", comment: "")
+    intervalLabel.isEditable = false
+    intervalLabel.isBordered = false
+    intervalLabel.drawsBackground = false
+    intervalLabel.alignment = .right
+    intervalLabel.font = NSFont.systemFont(ofSize: 12)
+    intervalLabel.frame = NSRect(x: 280, y: 130, width: 80, height: 24)
+    content.addSubview(intervalLabel)
+
+    intervalField.frame = NSRect(x: 365, y: 130, width: 60, height: 24)
+    intervalField.placeholderString = "60"
+    intervalField.font = NSFont.systemFont(ofSize: 12)
+    content.addSubview(intervalField)
 
     // Status label
     statusLabel.frame = NSRect(x: 15, y: 105, width: 445, height: 20)
@@ -146,6 +169,8 @@ final class QiwoSyncSettingsController: NSWindowController {
     usernameField.stringValue = settings.username
     passwordField.stringValue = currentPassword
     deviceIdField.stringValue = settings.deviceId
+    autoSyncCheckbox.state = settings.autoSync ? .on : .off
+    intervalField.stringValue = String(settings.syncIntervalMinutes)
   }
 
   private func readFields() {
@@ -154,6 +179,8 @@ final class QiwoSyncSettingsController: NSWindowController {
     settings.username = usernameField.stringValue.trimmingCharacters(in: .whitespaces)
     settings.deviceId = deviceIdField.stringValue.trimmingCharacters(in: .whitespaces)
     currentPassword = passwordField.stringValue
+    settings.autoSync = autoSyncCheckbox.state == .on
+    settings.syncIntervalMinutes = Int(intervalField.stringValue) ?? 60
   }
 
   // MARK: - Actions
@@ -211,6 +238,8 @@ final class QiwoSyncSettingsController: NSWindowController {
     readFields()
     if settings.save() {
       QiwoKeychain.savePassword(currentPassword)
+      // 重启自动同步以应用新设置
+      NSApp.qiwoAppDelegate.startAutoSync()
       showStatus(NSLocalizedString("Settings saved.", comment: ""), isError: false)
     } else {
       showStatus(NSLocalizedString("Failed to save settings.", comment: ""), isError: true)
