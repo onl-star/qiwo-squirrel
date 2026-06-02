@@ -31,13 +31,12 @@ cp -R download/dist librime/
 cp -R download/share/opencc librime/share/
 cp -R download/Sparkle.framework Frameworks/
 
-# pre-built dist only ships top-level headers; fetch rime/key_table.h from source
+# pre-built dist only ships top-level headers; copy bundled key_table.h for subdir headers
 mkdir -p librime/src/rime librime/include/rime
 cp -R librime/dist/include/* librime/src/ || true
 cp -R librime/dist/include/* librime/include/ || true
-curl -sSf -o librime/src/rime/key_table.h \
-  "https://raw.githubusercontent.com/rime/librime/master/src/rime/key_table.h"
-cp librime/src/rime/key_table.h librime/include/rime/key_table.h
+cp sources/rime/key_table.h librime/src/rime/key_table.h
+cp sources/rime/key_table.h librime/include/rime/key_table.h
 
 # skip building librime and opencc-data; use downloaded artifacts
 mkdir -p lib bin
