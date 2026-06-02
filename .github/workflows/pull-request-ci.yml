@@ -31,7 +31,9 @@ jobs:
             -output qiwo-sync/qiwo-rime-sync
 
       - name: Initialize librime submodule
-        run: git submodule update --init librime || git clone --depth 1 https://github.com/rime/librime.git librime
+        run: |
+          git submodule update --init librime 2>/dev/null || \
+            (rm -rf librime && git clone --depth 1 https://github.com/rime/librime.git librime)
 
       - name: Install SwiftLint
         run: brew install swiftlint
