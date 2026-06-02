@@ -31,12 +31,11 @@ cp -R download/dist librime/
 cp -R download/share/opencc librime/share/
 cp -R download/Sparkle.framework Frameworks/
 
-# pre-built dist only ships top-level headers; copy bundled key_table.h for subdir headers
-mkdir -p librime/src/rime librime/include/rime
-cp -R librime/dist/include/* librime/src/ || true
-cp -R librime/dist/include/* librime/include/ || true
-cp sources/rime/key_table.h librime/src/rime/key_table.h
-cp sources/rime/key_table.h librime/include/rime/key_table.h
+# pre-built dist provides binaries only; source headers come from the submodule
+# the CI workflow initializes librime submodule before this script runs
+# replace key_table.h with local version that doesn't depend on X11
+cp sources/rime/key_table.h librime/src/rime/key_table.h 2>/dev/null || true
+cp sources/rime/key_table.h librime/include/rime/key_table.h 2>/dev/null || true
 
 # skip building librime and opencc-data; use downloaded artifacts
 mkdir -p lib bin
