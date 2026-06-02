@@ -33,6 +33,9 @@ jobs:
             qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
             -output qiwo-sync/qiwo-rime-sync
 
+      - name: Initialize Git submodules
+        run: git submodule update --init --recursive
+
       - name: Install SwiftLint
         run: brew install swiftlint
 
