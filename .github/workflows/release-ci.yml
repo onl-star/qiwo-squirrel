@@ -19,13 +19,34 @@ jobs:
           fetch-depth: 0
           submodules: true
 
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build qiwo-sync-core (universal)
+        run: |
+          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
+            --configuration Release --runtime osx-arm64 \
+            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
+            -o qiwo-sync-core/publish/osx-arm64
+          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
+            --configuration Release --runtime osx-x64 \
+            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
+            -o qiwo-sync-core/publish/osx-x64
+          mkdir -p qiwo-sync
+          lipo -create \
+            qiwo-sync-core/publish/osx-arm64/qiwo-rime-sync \
+            qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
+            -output qiwo-sync/qiwo-rime-sync
+
       - name: Install SwiftLint
         run: brew install swiftlint
 
       - name: Lint
         run: swiftlint
 
-      - name: Build Squirrel
+      - name: Build Qiwo
         env:
           ARCHS: 'arm64 x86_64'
         run: ./action-build.sh archive
@@ -48,19 +69,19 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "package/Squirrel-*.pkg"
+          artifacts: "package/Qiwo*.pkg"
           body: |
             ${{ steps.release_log.outputs.changelog }}
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create nightly release
-        if: ${{ github.repository == 'rime/squirrel' && github.ref == 'refs/heads/master' }}
+        if: ${{ github.repository == 'LeaWron/qiwo-squirrel' && github.ref == 'refs/heads/main' }}
         uses: 'marvinpinto/action-automatic-releases@latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: latest
           prerelease: true
-          title: "Nightly build"
+          title: "Nightly Build"
           files: |
-            package/Squirrel-*.pkg
+            package/Qiwo*.pkg

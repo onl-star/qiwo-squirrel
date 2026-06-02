@@ -12,6 +12,27 @@ jobs:
         with:
           submodules: true
 
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build qiwo-sync-core (universal)
+        run: |
+          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
+            --configuration Release --runtime osx-arm64 \
+            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
+            -o qiwo-sync-core/publish/osx-arm64
+          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
+            --configuration Release --runtime osx-x64 \
+            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
+            -o qiwo-sync-core/publish/osx-x64
+          mkdir -p qiwo-sync
+          lipo -create \
+            qiwo-sync-core/publish/osx-arm64/qiwo-rime-sync \
+            qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
+            -output qiwo-sync/qiwo-rime-sync
+
       - name: Install SwiftLint
         run: brew install swiftlint
 
@@ -22,7 +43,7 @@ jobs:
         run: |
           echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
 
-      - name: Build Squirrel
+      - name: Build Qiwo
         run: ./action-build.sh package
 
       - name: Install periphery
@@ -31,10 +52,9 @@ jobs:
       - name: Check Unused Code
         run: periphery scan --relative-results --skip-build --index-store-path build/Index.noindex/DataStore
 
-      - name: Upload Squirrel artifact
+      - name: Upload Qiwo artifact
         uses: actions/upload-artifact@v6
         with:
-          name: Squirrel-${{ env.git_ref_name }}.zip
+          name: Qiwo-macOS-${{ env.git_ref_name }}
           path: package/*.pkg
-          # keep 90 days
           retention-days: 90

@@ -8,3 +8,7 @@
 [submodule "Sparkle"]
 	path = Sparkle
 	url = https://github.com/sparkle-project/Sparkle
+[submodule "qiwo-sync-core"]
+	path = qiwo-sync-core
+	url = https://github.com/LeaWron/qiwo-sync-core.git
+	branch = main
