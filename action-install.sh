@@ -32,9 +32,12 @@ cp -R download/share/opencc librime/share/
 cp -R download/Sparkle.framework Frameworks/
 
 # pre-built dist lacks source headers; copy for xcodebuild header search paths
+# Xcode expects headers at librime/src and librime/include
+ls -la librime/dist/include/
 mkdir -p librime/src librime/include
-cp -R librime/dist/include/* librime/src/
-cp -R librime/dist/include/* librime/include/
+cp -R librime/dist/include/* librime/src/ || true
+cp -R librime/dist/include/* librime/include/ || true
+ls -la librime/include/
 
 # skip building librime and opencc-data; use downloaded artifacts
 mkdir -p lib bin
