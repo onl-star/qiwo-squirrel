@@ -5,4 +5,3 @@
 
 #import <rime_api_stdbool.h>
 #import <rime/key_table.h>
-#import <rime/qiwo_rime_shim.h>

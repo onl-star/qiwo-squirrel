@@ -37,7 +37,7 @@ cp -R download/Sparkle.framework Frameworks/
 # also add _stdbool type shim for API compatibility
 cp sources/rime/key_table.h librime/src/rime/key_table.h 2>/dev/null || true
 cp sources/rime/key_table.h librime/include/rime/key_table.h 2>/dev/null || true
-cp sources/rime/qiwo_rime_shim.h librime/include/rime/qiwo_rime_shim.h 2>/dev/null || true
+# latest librime from git clone already provides _stdbool types via RIME_FLAVORED
 
 # skip building librime and opencc-data; use downloaded artifacts
 mkdir -p lib bin
