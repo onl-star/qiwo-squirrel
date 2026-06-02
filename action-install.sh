@@ -36,7 +36,7 @@ mkdir -p librime/src/rime librime/include/rime
 cp -R librime/dist/include/* librime/src/ || true
 cp -R librime/dist/include/* librime/include/ || true
 curl -sSf -o librime/src/rime/key_table.h \
-  "https://raw.githubusercontent.com/rime/librime/v${rime_version}/include/rime/key_table.h"
+  "https://raw.githubusercontent.com/rime/librime/master/include/rime/key_table.h"
 cp librime/src/rime/key_table.h librime/include/rime/key_table.h
 
 # skip building librime and opencc-data; use downloaded artifacts
