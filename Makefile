@@ -86,11 +86,11 @@ $(OPENCC_DATA):
 	$(MAKE) opencc-data
 
 plum-data:
-	$(MAKE) -C plum
+	if [ -f plum/Makefile ]; then $(MAKE) -C plum; fi
 ifdef PLUM_TAG
 	rime_dir=plum/output bash plum/rime-install $(PLUM_TAG)
 endif
-	$(MAKE) copy-plum-data
+	if [ -f plum/Makefile ]; then $(MAKE) copy-plum-data; fi
 
 opencc-data:
 	$(MAKE) -C librime deps/opencc

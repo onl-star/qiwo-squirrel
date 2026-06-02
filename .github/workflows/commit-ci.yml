@@ -33,9 +33,6 @@ jobs:
             qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
             -output qiwo-sync/qiwo-rime-sync
 
-      - name: Setup build dependencies
-        run: make setup
-
       - name: Install SwiftLint
         run: brew install swiftlint
 
