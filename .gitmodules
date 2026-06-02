@@ -2,12 +2,15 @@
 	path = librime
 	url = https://github.com/rime/librime.git
 	ignore = dirty
+	branch = master
 [submodule "plum"]
 	path = plum
 	url = https://github.com/rime/plum.git
+	branch = master
 [submodule "Sparkle"]
 	path = Sparkle
 	url = https://github.com/sparkle-project/Sparkle
+	branch = master
 [submodule "qiwo-sync-core"]
 	path = qiwo-sync-core
 	url = https://github.com/LeaWron/qiwo-sync-core.git

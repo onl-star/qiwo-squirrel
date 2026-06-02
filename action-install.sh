@@ -31,7 +31,8 @@ cp -R download/dist librime/
 cp -R download/share/opencc librime/share/
 cp -R download/Sparkle.framework Frameworks/
 
-# pre-built dist provides binaries only; all required headers are local in sources/rime/
+# Replace key_table.h with local X11-free version for macOS CI
+cp sources/rime/key_table.h librime/src/rime/key_table.h 2>/dev/null || true
 
 # skip building librime and opencc-data; use downloaded artifacts
 mkdir -p lib bin
