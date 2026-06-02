@@ -40,9 +40,6 @@ jobs:
             qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
             -output qiwo-sync/qiwo-rime-sync
 
-      - name: Clone librime source for headers
-        run: rm -rf librime && git clone --depth 1 https://github.com/rime/librime.git librime
-
       - name: Install SwiftLint
         run: brew install swiftlint
 
