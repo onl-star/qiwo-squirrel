@@ -56,15 +56,19 @@ jobs:
           set -e
           APP_NAME="Qiwo.app"
           DST="/Library/Input Methods"
-          echo "==> 安装 齐我输入法 (Qiwo) ..."
+          echo "==> 更新 齐我输入法 (Qiwo) ..."
           SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+          echo "--> 停止旧进程..."
+          sudo killall -9 QiwoInputMethod 2>/dev/null || true
+          sudo killall -9 Qiwo 2>/dev/null || true
 
           if [ -d "${DST}/${APP_NAME}" ]; then
             echo "--> 移除旧版本..."
             sudo rm -rf "${DST}/${APP_NAME}"
           fi
 
-          echo "--> 复制 Qiwo.app 到 ${DST} ..."
+          echo "--> 安装 Qiwo.app 到 ${DST} ..."
           sudo cp -R "${SCRIPT_DIR}/${APP_NAME}" "${DST}/"
 
           echo "--> 移除隔离属性..."
@@ -73,15 +77,16 @@ jobs:
           if [ -d "${SCRIPT_DIR}/qiwo-sync" ]; then
             echo "--> 安装同步工具..."
             sudo mkdir -p /usr/local/bin
+            sudo rm -f /usr/local/bin/qiwo-rime-sync
             sudo cp "${SCRIPT_DIR}/qiwo-sync/qiwo-rime-sync" /usr/local/bin/
             sudo xattr -d com.apple.quarantine /usr/local/bin/qiwo-rime-sync 2>/dev/null || true
           fi
 
-          echo "--> 注册输入法..."
-          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --register-input-source 2>/dev/null || true
-          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --enable-input-source 2>/dev/null || true
+          echo "--> 刷新输入法注册..."
+          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --register-input-source 2>&1 | grep -v "already registered" || true
+          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --enable-input-source 2>&1 | grep -v "already enabled" || true
 
-          echo "==> 安装完成！请从输入法菜单切换到「齐我输入法」"
+          echo "==> 更新完成！"
           SCRIPT
           chmod +x "${STAGE_DIR}/install.sh"
           zip -r "qiwo-macos-${VERSION}.zip" "${STAGE_DIR}"
