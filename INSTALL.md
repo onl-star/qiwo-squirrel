@@ -4,13 +4,22 @@
 
 - macOS 13.0 或更高版本
 - Xcode 16+（用于编译）
-- .NET 8 SDK（用于构建同步工具）
+- Rust toolchain（用于构建同步工具）
 
-## 依赖安装
+## 推荐安装方式
+
+正式产物由 GitHub Actions 构建。下载 `Qiwo-macOS-*.tar.gz` 后解压，运行包内脚本：
 
 ```bash
-# 安装 .NET 8 SDK
-brew install dotnet-sdk@8
+./install.sh
+```
+
+该脚本会把同目录的 `Qiwo.app` 安装到 `/Library/Input Methods/` 并完成输入法注册，不依赖本地源码构建，也不会触发未签名 `.pkg` 安装流程。
+
+## 源码构建依赖
+
+```bash
+brew install cmake git rust
 
 # 安装 Xcode（通过 App Store）
 # 安装 Command Line Tools
@@ -45,32 +54,14 @@ fi
 
 ```bash
 cd qiwo-sync-core
-# 为 Apple Silicon 编译
-dotnet publish src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-  --configuration Release \
-  --runtime osx-arm64 \
-  --self-contained true \
-  -p:PublishSingleFile=true \
-  -p:PublishTrimmed=true \
-  -o publish/osx-arm64
-
-# 为 Intel Mac 编译
-dotnet publish src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-  --configuration Release \
-  --runtime osx-x64 \
-  --self-contained true \
-  -p:PublishSingleFile=true \
-  -p:PublishTrimmed=true \
-  -o publish/osx-x64
+cargo build --release -p qiwo-rime-sync
 ```
 
 ### 2. 复制同步工具到应用包
 
 ```bash
 mkdir -p qiwo-squirrel/qiwo-sync
-cp qiwo-sync-core/publish/osx-arm64/qiwo-rime-sync qiwo-squirrel/qiwo-sync/
-# 或针对 Intel Mac:
-# cp qiwo-sync-core/publish/osx-x64/qiwo-rime-sync qiwo-squirrel/qiwo-sync/
+cp qiwo-sync-core/target/release/qiwo-rime-sync qiwo-squirrel/qiwo-sync/
 ```
 
 ### 3. 构建依赖

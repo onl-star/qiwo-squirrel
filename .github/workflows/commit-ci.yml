@@ -36,7 +36,7 @@ jobs:
           echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
 
       - name: Build Qiwo
-        run: ./action-build.sh package
+        run: make release
 
       - name: Install periphery
         run: brew install peripheryapp/periphery/periphery
@@ -44,66 +44,22 @@ jobs:
       - name: Check Unused Code
         run: periphery scan --relative-results --skip-build --index-store-path build/Index.noindex/DataStore
 
-      - name: Package one-click install zip
+      - name: Package installer script
         run: |
           VERSION=$(git describe --always)
-          STAGE_DIR="qiwo-macos-${VERSION}"
-          mkdir -p "${STAGE_DIR}"
-          cp -R build/Build/Products/Release/Qiwo.app "${STAGE_DIR}/"
-          cp -R qiwo-sync "${STAGE_DIR}/" 2>/dev/null || true
-          cat > "${STAGE_DIR}/install.sh" << 'SCRIPT'
-          #!/bin/bash
-          set -e
-          APP_NAME="Qiwo.app"
-          DST="/Library/Input Methods"
-          echo "==> 更新 齐我输入法 (Qiwo) ..."
-          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+          PACKAGE_DIR="package/Qiwo-macOS-${VERSION}"
+          ARCHIVE="package/Qiwo-macOS-${VERSION}.tar.gz"
+          rm -rf "${PACKAGE_DIR}" "${ARCHIVE}"
+          mkdir -p "${PACKAGE_DIR}"
+          ditto build/Build/Products/Release/Qiwo.app "${PACKAGE_DIR}/Qiwo.app"
+          cp scripts/install-from-release.sh "${PACKAGE_DIR}/install.sh"
+          cp scripts/postinstall "${PACKAGE_DIR}/postinstall"
+          chmod +x "${PACKAGE_DIR}/install.sh" "${PACKAGE_DIR}/postinstall"
+          tar -czf "${ARCHIVE}" -C package "Qiwo-macOS-${VERSION}"
 
-          echo "--> 停止旧进程..."
-          sudo killall -9 QiwoInputMethod 2>/dev/null || true
-          sudo killall -9 Qiwo 2>/dev/null || true
-
-          if [ -d "${DST}/${APP_NAME}" ]; then
-            echo "--> 移除旧版本..."
-            sudo rm -rf "${DST}/${APP_NAME}"
-          fi
-
-          echo "--> 安装 Qiwo.app 到 ${DST} ..."
-          sudo cp -R "${SCRIPT_DIR}/${APP_NAME}" "${DST}/"
-
-          echo "--> 移除隔离属性..."
-          sudo xattr -r -d com.apple.quarantine "${DST}/${APP_NAME}" 2>/dev/null || true
-
-          if [ -d "${SCRIPT_DIR}/qiwo-sync" ]; then
-            echo "--> 安装同步工具..."
-            sudo mkdir -p /usr/local/bin
-            sudo rm -f /usr/local/bin/qiwo-rime-sync
-            sudo cp "${SCRIPT_DIR}/qiwo-sync/qiwo-rime-sync" /usr/local/bin/
-            sudo xattr -d com.apple.quarantine /usr/local/bin/qiwo-rime-sync 2>/dev/null || true
-          fi
-
-          echo "--> 刷新输入法注册..."
-          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --register-input-source 2>&1 | grep -v "already registered" || true
-          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --enable-input-source 2>&1 | grep -v "already enabled" || true
-
-          echo "--> 刷新输入法菜单..."
-          killall TextInputMenuAgent 2>/dev/null || true
-
-          echo "==> 更新完成！重新切换输入法即可。"
-          SCRIPT
-          chmod +x "${STAGE_DIR}/install.sh"
-          zip -r "qiwo-macos-${VERSION}.zip" "${STAGE_DIR}"
-
-      - name: Upload Qiwo pkg
-        uses: actions/upload-artifact@v6
+      - name: Upload installer script package
+        uses: actions/upload-artifact@v7
         with:
           name: Qiwo-macOS-${{ env.git_ref_name }}
-          path: package/*.pkg
-          retention-days: 90
-
-      - name: Upload Qiwo zip
-        uses: actions/upload-artifact@v6
-        with:
-          name: Qiwo-macOS-portable-${{ env.git_ref_name }}
-          path: qiwo-macos-*.zip
+          path: package/Qiwo-macOS-*.tar.gz
           retention-days: 90

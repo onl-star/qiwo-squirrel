@@ -56,15 +56,18 @@ fi
 # ── 1c. 构建工具检查与自动安装 ──────────────────────────────
 
 MISSING_TOOLS=()
+MISSING_BREW_PACKAGES=()
 
 check_tool() {
     if ! command -v "$1" &>/dev/null; then
         MISSING_TOOLS+=("$1")
+        MISSING_BREW_PACKAGES+=("${2:-$1}")
     fi
 }
 
 check_tool cmake
 check_tool git
+check_tool cargo rust
 
 if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
     if [ "$NEED_BREW" = true ]; then
@@ -81,23 +84,14 @@ if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
     fi
 
     log_info "正在安装缺失工具: ${MISSING_TOOLS[*]}..."
-    brew install "${MISSING_TOOLS[@]}"
+    brew install "${MISSING_BREW_PACKAGES[@]}"
 fi
 
-log_ok "构建工具已就绪 (cmake: $(cmake --version 2>/dev/null | head -1 | awk '{print $NF}'), git: $(git --version | awk '{print $NF}'))"
+log_ok "构建工具已就绪 (cmake: $(cmake --version 2>/dev/null | head -1 | awk '{print $NF}'), git: $(git --version | awk '{print $NF}'), cargo: $(cargo --version | awk '{print $2}'))"
 
-# ── 2. 可选依赖检查 (.NET SDK for sync) ──────────────────────
+# ── 2. Rust 同步核心 ────────────────────────────────────────
 
 SYNC_CORE_DIR="$SCRIPT_DIR/../qiwo-sync-core"
-HAS_DOTNET=false
-
-if command -v dotnet &>/dev/null; then
-    HAS_DOTNET=true
-    log_ok ".NET SDK $(dotnet --version)"
-else
-    log_warn "未找到 .NET SDK，将跳过同步工具构建"
-    echo "       如需 WebDAV 同步功能，请运行: brew install dotnet-sdk@8"
-fi
 
 # ── 3. 子模块初始化 ─────────────────────────────────────────
 
@@ -114,25 +108,20 @@ log_ok "依赖构建完成"
 # ── 5. 构建同步工具 (可选) ──────────────────────────────────
 
 HAS_SYNC=false
-if [ "$HAS_DOTNET" = true ] && [ -d "$SYNC_CORE_DIR" ]; then
-    ARCH=$(uname -m)
-    RID="osx-$ARCH"
-    log_info "构建同步工具 (runtime: $RID)..."
+if [ -d "$SYNC_CORE_DIR" ]; then
+    log_info "构建同步工具 (Rust)..."
 
     pushd "$SYNC_CORE_DIR" > /dev/null
-    dotnet publish src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-        --configuration Release \
-        --runtime "$RID" \
-        --self-contained true \
-        -p:PublishSingleFile=true \
-        -o "publish/$RID"
+    cargo build --release -p qiwo-rime-sync
 
     mkdir -p "$SCRIPT_DIR/qiwo-sync"
-    cp "publish/$RID/qiwo-rime-sync" "$SCRIPT_DIR/qiwo-sync/"
+    cp "target/release/qiwo-rime-sync" "$SCRIPT_DIR/qiwo-sync/"
     popd > /dev/null
 
     HAS_SYNC=true
     log_ok "同步工具构建完成"
+else
+    log_warn "未找到 qiwo-sync-core，将跳过同步工具构建"
 fi
 
 # ── 6. 编译 Qiwo.app ────────────────────────────────────────
@@ -158,7 +147,7 @@ echo "  现在可以通过输入法菜单切换到「齐我」输入法。"
 echo ""
 
 if [ "$HAS_SYNC" = false ]; then
-    echo "  WebDAV 同步: 未构建同步工具，如需使用请先安装 .NET SDK 后重新运行。"
+    echo "  WebDAV 同步: 未构建同步工具。"
 else
     echo "  WebDAV 同步: 已集成，请在输入法菜单中配置。"
 fi

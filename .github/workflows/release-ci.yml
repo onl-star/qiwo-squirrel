@@ -4,8 +4,11 @@ on:
     tags:
       - '*'
     branches:
-      - master
+      - main
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -19,25 +22,19 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+      - name: Setup Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
 
       - name: Build qiwo-sync-core (universal)
         run: |
-          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-            --configuration Release --runtime osx-arm64 \
-            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
-            -o qiwo-sync-core/publish/osx-arm64
-          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-            --configuration Release --runtime osx-x64 \
-            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
-            -o qiwo-sync-core/publish/osx-x64
+          cargo build --manifest-path qiwo-sync-core/Cargo.toml --release -p qiwo-rime-sync --target aarch64-apple-darwin
+          cargo build --manifest-path qiwo-sync-core/Cargo.toml --release -p qiwo-rime-sync --target x86_64-apple-darwin
           mkdir -p qiwo-sync
           lipo -create \
-            qiwo-sync-core/publish/osx-arm64/qiwo-rime-sync \
-            qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
+            qiwo-sync-core/target/aarch64-apple-darwin/release/qiwo-rime-sync \
+            qiwo-sync-core/target/x86_64-apple-darwin/release/qiwo-rime-sync \
             -output qiwo-sync/qiwo-rime-sync
 
       - name: Install SwiftLint
@@ -49,7 +46,20 @@ jobs:
       - name: Build Qiwo
         env:
           ARCHS: 'arm64 x86_64'
-        run: ./action-build.sh archive
+        run: make release
+
+      - name: Package installer script
+        run: |
+          VERSION=$(git describe --always)
+          PACKAGE_DIR="package/Qiwo-macOS-${VERSION}"
+          ARCHIVE="package/Qiwo-macOS-${VERSION}.tar.gz"
+          rm -rf "${PACKAGE_DIR}" "${ARCHIVE}"
+          mkdir -p "${PACKAGE_DIR}"
+          ditto build/Build/Products/Release/Qiwo.app "${PACKAGE_DIR}/Qiwo.app"
+          cp scripts/install-from-release.sh "${PACKAGE_DIR}/install.sh"
+          cp scripts/postinstall "${PACKAGE_DIR}/postinstall"
+          chmod +x "${PACKAGE_DIR}/install.sh" "${PACKAGE_DIR}/postinstall"
+          tar -czf "${ARCHIVE}" -C package "Qiwo-macOS-${VERSION}"
 
       - name: Install periphery
         run: brew install peripheryapp/periphery/periphery
@@ -67,13 +77,12 @@ jobs:
 
       - name: Create release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: ncipollo/release-action@v1
+        uses: softprops/action-gh-release@v3
         with:
-          artifacts: "package/Qiwo*.pkg"
+          files: "package/Qiwo-macOS-*.tar.gz"
           body: |
             ${{ steps.release_log.outputs.changelog }}
           draft: true
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update nightly tag
         if: ${{ github.repository == 'LeaWron/qiwo-squirrel' && github.ref == 'refs/heads/main' }}
@@ -83,11 +92,10 @@ jobs:
 
       - name: Create nightly release
         if: ${{ github.repository == 'LeaWron/qiwo-squirrel' && github.ref == 'refs/heads/main' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: latest
           prerelease: true
           name: "Nightly Build"
           files: |
-            package/Qiwo*.pkg
+            package/Qiwo-macOS-*.tar.gz
