@@ -240,7 +240,7 @@ final class QiwoSyncSettingsController: NSWindowController {
       QiwoKeychain.savePassword(currentPassword)
       // 重启自动同步以应用新设置
       NSApp.qiwoAppDelegate.startAutoSync()
-      showStatus(NSLocalizedString("Settings saved.", comment: ""), isError: false)
+      window?.close()
     } else {
       showStatus(NSLocalizedString("Failed to save settings.", comment: ""), isError: true)
     }
