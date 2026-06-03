@@ -36,6 +36,7 @@ jobs:
             qiwo-sync-core/target/aarch64-apple-darwin/release/qiwo-rime-sync \
             qiwo-sync-core/target/x86_64-apple-darwin/release/qiwo-rime-sync \
             -output qiwo-sync/qiwo-rime-sync
+          chmod +x qiwo-sync/qiwo-rime-sync
 
       - name: Install SwiftLint
         run: brew install swiftlint
@@ -53,6 +54,7 @@ jobs:
           VERSION=$(git describe --always)
           PACKAGE_DIR="package/Qiwo-macOS-${VERSION}"
           ARCHIVE="package/Qiwo-macOS-${VERSION}.tar.gz"
+          test -x build/Build/Products/Release/Qiwo.app/Contents/Resources/qiwo-sync/qiwo-rime-sync
           rm -rf "${PACKAGE_DIR}" "${ARCHIVE}"
           mkdir -p "${PACKAGE_DIR}"
           ditto build/Build/Products/Release/Qiwo.app "${PACKAGE_DIR}/Qiwo.app"
