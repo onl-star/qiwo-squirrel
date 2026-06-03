@@ -18,9 +18,8 @@ enum QiwoInstallationHelper {
       let needsUpdate = !content.contains("sync_dir:")
       // 提取旧的 installation_id
       if let match = try? NSRegularExpression(pattern: #"installation_id:\s*"([^"]*)""#)
-        .firstMatch(in: content, range: NSRange(content.startIndex..., in: content))
-      {
-        let range = Range(match.range(at: 1), in: content)!
+        .firstMatch(in: content, range: NSRange(content.startIndex..., in: content)),
+        let range = Range(match.range(at: 1), in: content) {
         oldInstallationId = String(content[range])
       }
 
