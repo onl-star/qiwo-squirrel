@@ -75,10 +75,14 @@ jobs:
           echo "--> 复制 Qiwo.app 到 ${DST} ..."
           sudo cp -R "${SCRIPT_DIR}/${APP_NAME}" "${DST}/"
 
+          echo "--> 移除隔离属性..."
+          sudo xattr -r -d com.apple.quarantine "${DST}/${APP_NAME}" 2>/dev/null || true
+
           if [ -d "${SCRIPT_DIR}/qiwo-sync" ]; then
             echo "--> 安装同步工具..."
             sudo mkdir -p /usr/local/bin
             sudo cp "${SCRIPT_DIR}/qiwo-sync/qiwo-rime-sync" /usr/local/bin/
+            sudo xattr -d com.apple.quarantine /usr/local/bin/qiwo-rime-sync 2>/dev/null || true
           fi
 
           echo "--> 注册输入法..."
