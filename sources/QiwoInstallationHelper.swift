@@ -5,31 +5,34 @@ import Foundation
 enum QiwoInstallationHelper {
   static let syncDir = "sync"
 
-  /// 确保 installation.yaml 存在且包含 installation_id 和 sync_dir。
+  /// 确保 installation.yaml 包含正确的 installation_id 和 sync_dir。
+  /// installation_id 始终设为 WebDAV 设备 ID。sync_dir 若缺失则补充。
   static func ensure(rimeUserDir: String, deviceId: String) {
     let file = URL(fileURLWithPath: rimeUserDir).appendingPathComponent("installation.yaml")
     let safeId = makeSafeId(deviceId)
 
-    // 如果已存在，只补缺失的字段
     if FileManager.default.fileExists(atPath: file.path) {
       guard var content = try? String(contentsOf: file, encoding: .utf8) else { return }
-      var updated = content.trimmingCharacters(in: .whitespacesAndNewlines)
-      var needsUpdate = false
 
-      if !updated.contains("sync_dir:") {
-        updated.append("\n")
-        updated.append("sync_dir: \"\(syncDir)\"\n")
-        needsUpdate = true
-      }
-      if !updated.contains("installation_id:") {
-        updated.append("\n")
-        updated.append("installation_id: \"\(safeId)\"\n")
-        needsUpdate = true
+      // 替换或添加 installation_id
+      if content.contains("installation_id:") {
+        content = content.replacingOccurrences(
+          of: #"installation_id:.*"#,
+          with: "installation_id: \"\(safeId)\"",
+          options: .regularExpression
+        )
+      } else {
+        content = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        content.append("\ninstallation_id: \"\(safeId)\"\n")
       }
 
-      if needsUpdate {
-        try? updated.write(to: file, atomically: true, encoding: .utf8)
+      // 添加 sync_dir（若缺失）
+      if !content.contains("sync_dir:") {
+        content = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        content.append("\nsync_dir: \"\(syncDir)\"\n")
       }
+
+      try? content.write(to: file, atomically: true, encoding: .utf8)
       return
     }
 
