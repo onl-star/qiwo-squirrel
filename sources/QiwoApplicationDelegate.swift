@@ -87,9 +87,33 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
     let password = QiwoKeychain.loadPassword()
     let sync = QiwoWebDavSync(settings: settings, password: password)
 
-    DispatchQueue.global(qos: .userInitiated).async {
+    DispatchQueue.global(qos: .userInitiated).async { [self] in
+      QiwoApplicationDelegate.showMessage(msgText:
+        NSLocalizedString("WebDAV sync starting...", comment: ""))
+
+      // 1. 确保 installation.yaml 配置了 sync_dir 和 installation_id
+      QiwoInstallationHelper.ensure(
+        rimeUserDir: QiwoApp.userDir.path,
+        deviceId: settings.deviceId
+      )
+      QiwoInstallationHelper.ensureSyncExportDir(
+        rimeUserDir: QiwoApp.userDir.path,
+        deviceId: settings.deviceId
+      )
+
+      // 2. 先导出用户词库
+      _ = self.rimeAPI.sync_user_data()
+
+      // 3. WebDAV 同步（配置 + 用户词库）
       let result = sync.run(mode: .sync)
+
       if result.success {
+        // 4. 导入合并用户词库
+        _ = self.rimeAPI.sync_user_data()
+
+        // 5. 重新部署
+        self.deploy()
+
         QiwoApplicationDelegate.showMessage(msgText:
           NSLocalizedString("WebDAV sync completed.", comment: ""))
       } else {

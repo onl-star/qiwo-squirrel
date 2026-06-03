@@ -18,7 +18,7 @@ final class QiwoWebDavSync {
 
   func run(mode: Mode = .sync) -> (success: Bool, exitCode: Int32, output: String) {
     guard let syncTool = findSyncTool() else {
-      return (false, -1, "qiwo-rime-sync not found in app bundle.")
+      return (false, -1, "qiwo-rime-sync not found in app bundle. Expected at Resources/qiwo-sync/qiwo-rime-sync")
     }
 
     let url = settings.buildRemoteUrl()
@@ -65,11 +65,6 @@ final class QiwoWebDavSync {
 
       let data = pipe.fileHandleForReading.readDataToEndOfFile()
       let output = String(data: data, encoding: .utf8) ?? ""
-
-      if process.terminationStatus == 0 {
-        DistributedNotificationCenter.default()
-          .postNotificationName(.init("QiwoReloadNotification"), object: nil)
-      }
 
       return (process.terminationStatus == 0, process.terminationStatus, output)
     } catch {
