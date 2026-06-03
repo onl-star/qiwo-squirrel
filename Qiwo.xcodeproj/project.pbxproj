@@ -91,6 +91,7 @@
 		88D0027205BD4BCDA61BFFDC /* QiwoWebDavSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */; };
 		3125F370C8554288B985389E /* QiwoWebDavSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */; };
 		3A542DD4B11746BC89E5E3B0 /* QiwoSyncSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */; };
+		B2E42895603A43C19685E158 /* QiwoInstallationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D02EC0A320A4CE997C5F721 /* QiwoInstallationHelper.swift */; };
 		B39771312BEEE4540093A49B /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771302BEEE4540093A49B /* InfoPlist.xcstrings */; };
 		B39771332BEEE4540093A49B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771322BEEE4540093A49B /* Localizable.xcstrings */; };
 		B3EF08EA2F17125E00433A45 /* Rime.icon in Resources */ = {isa = PBXBuildFile; fileRef = B3EF08E92F17125E00433A45 /* Rime.icon */; };
@@ -299,6 +300,7 @@
 		4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoWebDavSettings.swift; path = sources/QiwoWebDavSettings.swift; sourceTree = "<group>"; };
 		1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoWebDavSync.swift; path = sources/QiwoWebDavSync.swift; sourceTree = "<group>"; };
 		F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoSyncSettingsController.swift; path = sources/QiwoSyncSettingsController.swift; sourceTree = "<group>"; };
+		2D02EC0A320A4CE997C5F721 /* QiwoInstallationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoInstallationHelper.swift; path = sources/QiwoInstallationHelper.swift; sourceTree = "<group>"; };
 
 		B39771302BEEE4540093A49B /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = InfoPlist.xcstrings; path = resources/InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B39771322BEEE4540093A49B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = resources/Localizable.xcstrings; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				B397712E2BEECBED0093A49B /* Main.swift */,
 				4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */,
 				1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */,
+				2D02EC0A320A4CE997C5F721 /* QiwoInstallationHelper.swift */,
 				F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */,
 				B39771262BED9B250093A49B /* QiwoTheme.swift */,
 				B397712A2BEE4C160093A49B /* QiwoPanel.swift */,
@@ -601,6 +604,7 @@
 				B397712F2BEECBED0093A49B /* Main.swift in Sources */,
 				88D0027205BD4BCDA61BFFDC /* QiwoWebDavSettings.swift in Sources */,
 				3125F370C8554288B985389E /* QiwoWebDavSync.swift in Sources */,
+				B2E42895603A43C19685E158 /* QiwoInstallationHelper.swift in Sources */,
 				3A542DD4B11746BC89E5E3B0 /* QiwoSyncSettingsController.swift in Sources */,
 				B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */,
 				B397712B2BEE4C160093A49B /* QiwoPanel.swift in Sources */,
