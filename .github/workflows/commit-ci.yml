@@ -86,7 +86,10 @@ jobs:
           "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --register-input-source 2>&1 | grep -v "already registered" || true
           "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --enable-input-source 2>&1 | grep -v "already enabled" || true
 
-          echo "==> 更新完成！"
+          echo "--> 刷新输入法菜单..."
+          killall TextInputMenuAgent 2>/dev/null || true
+
+          echo "==> 更新完成！重新切换输入法即可。"
           SCRIPT
           chmod +x "${STAGE_DIR}/install.sh"
           zip -r "qiwo-macos-${VERSION}.zip" "${STAGE_DIR}"
