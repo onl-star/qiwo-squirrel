@@ -10,7 +10,7 @@ jobs:
           submodules: true
 
       - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
 
@@ -48,6 +48,51 @@ jobs:
 
       - name: Check Unused Code
         run: periphery scan --relative-results --skip-build --index-store-path build/Index.noindex/DataStore
+
+      - name: Package one-click install zip
+        run: |
+          VERSION=$(git describe --always)
+          STAGE_DIR="qiwo-macos-${VERSION}"
+          mkdir -p "${STAGE_DIR}"
+          cp -R build/Build/Products/Release/Qiwo.app "${STAGE_DIR}/"
+          cp -R qiwo-sync "${STAGE_DIR}/" 2>/dev/null || true
+          cat > "${STAGE_DIR}/install.sh" << 'SCRIPT'
+          #!/bin/bash
+          set -e
+          APP_NAME="Qiwo.app"
+          DST="/Library/Input Methods"
+          echo "==> 安装 齐我输入法 (Qiwo) ..."
+          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+          if [ -d "${DST}/${APP_NAME}" ]; then
+            echo "--> 移除旧版本..."
+            sudo rm -rf "${DST}/${APP_NAME}"
+          fi
+
+          echo "--> 复制 Qiwo.app 到 ${DST} ..."
+          sudo cp -R "${SCRIPT_DIR}/${APP_NAME}" "${DST}/"
+
+          if [ -d "${SCRIPT_DIR}/qiwo-sync" ]; then
+            echo "--> 安装同步工具..."
+            sudo mkdir -p /usr/local/bin
+            sudo cp "${SCRIPT_DIR}/qiwo-sync/qiwo-rime-sync" /usr/local/bin/
+          fi
+
+          echo "--> 注册输入法..."
+          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --register-input-source 2>/dev/null || true
+          "${DST}/${APP_NAME}/Contents/MacOS/Qiwo" --enable-input-source 2>/dev/null || true
+
+          echo "==> 安装完成！请从输入法菜单切换到「齐我输入法」"
+          SCRIPT
+          chmod +x "${STAGE_DIR}/install.sh"
+          zip -r "qiwo-macos-${VERSION}.zip" "${STAGE_DIR}"
+
+      - name: Upload Qiwo zip
+        uses: actions/upload-artifact@v6
+        with:
+          name: Qiwo-macOS-portable-${{ env.git_ref_name }}
+          path: qiwo-macos-*.zip
+          retention-days: 30
 
       - name: Upload Qiwo artifact
         uses: actions/upload-artifact@v6
