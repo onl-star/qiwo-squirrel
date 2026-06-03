@@ -12,25 +12,17 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '8.0.x'
+      - name: Setup Rust targets
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
 
       - name: Build qiwo-sync-core (universal)
         run: |
-          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-            --configuration Release --runtime osx-arm64 \
-            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
-            -o qiwo-sync-core/publish/osx-arm64
-          dotnet publish qiwo-sync-core/src/qiwo-rime-sync/qiwo-rime-sync.csproj \
-            --configuration Release --runtime osx-x64 \
-            --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true \
-            -o qiwo-sync-core/publish/osx-x64
+          cargo build --release --manifest-path qiwo-sync-core/Cargo.toml --target aarch64-apple-darwin
+          cargo build --release --manifest-path qiwo-sync-core/Cargo.toml --target x86_64-apple-darwin
           mkdir -p qiwo-sync
           lipo -create \
-            qiwo-sync-core/publish/osx-arm64/qiwo-rime-sync \
-            qiwo-sync-core/publish/osx-x64/qiwo-rime-sync \
+            qiwo-sync-core/target/aarch64-apple-darwin/release/qiwo-rime-sync \
+            qiwo-sync-core/target/x86_64-apple-darwin/release/qiwo-rime-sync \
             -output qiwo-sync/qiwo-rime-sync
 
       - name: Install SwiftLint

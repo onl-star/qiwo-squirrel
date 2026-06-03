@@ -73,7 +73,7 @@ final class QiwoWebDavSync {
   }
 
   private func findSyncTool() -> URL? {
-    // 1. App bundle (for CI builds)
+    // 1. App bundle Resources/qiwo-sync/
     if let resourcePath = Bundle.main.resourcePath {
       let bundled = URL(fileURLWithPath: resourcePath)
         .appendingPathComponent("qiwo-sync/qiwo-rime-sync")
@@ -86,13 +86,6 @@ final class QiwoWebDavSync {
     let systemPath = URL(fileURLWithPath: "/usr/local/bin/qiwo-rime-sync")
     if FileManager.default.isExecutableFile(atPath: systemPath.path) {
       return systemPath
-    }
-
-    // 3. Development fallback (cargo build --release)
-    let cargoPath = FileManager.default.homeDirectoryForCurrentUser
-      .appendingPathComponent("Temp/myime/qiwo-sync-core/target/release/qiwo-rime-sync")
-    if FileManager.default.isExecutableFile(atPath: cargoPath.path) {
-      return cargoPath
     }
 
     return nil
