@@ -1,8 +1,8 @@
 name: commit ci
 on:
   push:
-    branches:
-      - '*'
+    branches-ignore:
+      - main
 jobs:
   build:
     runs-on: macos-latest
@@ -10,7 +10,7 @@ jobs:
       - name: Checkout last commit
         uses: actions/checkout@v6
         with:
-          submodules: true
+          submodules: recursive
 
       - name: Setup Rust targets
         run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
