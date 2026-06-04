@@ -87,13 +87,13 @@ jobs:
           draft: true
 
       - name: Update nightly tag
-        if: ${{ github.repository == 'LeaWron/qiwo-squirrel' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           git tag -f latest
           git push -f origin latest
 
       - name: Create nightly release
-        if: ${{ github.repository == 'LeaWron/qiwo-squirrel' && github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         uses: softprops/action-gh-release@v3
         with:
           tag_name: latest
