@@ -37,7 +37,7 @@ jobs:
           echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
 
       - name: Build Qiwo
-        run: make release
+        run: ./action-build.sh release
 
       - name: Install periphery
         run: brew install peripheryapp/periphery/periphery

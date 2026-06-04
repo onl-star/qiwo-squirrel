@@ -6,18 +6,32 @@ install: install-release
 # ── Auto-setup: ensure submodules exist ────────────────────────
 
 LIBRIME_CM = librime/CMakeLists.txt
+LIBRIME_DEPS_CM = \
+	librime/deps/glog/CMakeLists.txt \
+	librime/deps/googletest/CMakeLists.txt \
+	librime/deps/leveldb/CMakeLists.txt \
+	librime/deps/marisa-trie/CMakeLists.txt \
+	librime/deps/opencc/CMakeLists.txt \
+	librime/deps/yaml-cpp/CMakeLists.txt
 PLUM_MF = plum/Makefile
 SPARKLE_XP = Sparkle/Sparkle.xcodeproj
 
 setup:
-	@if [ ! -f $(LIBRIME_CM) ] || [ ! -f $(PLUM_MF) ] || [ ! -d $(SPARKLE_XP) ]; then \
+	@missing_librime_deps=0; \
+	for f in $(LIBRIME_DEPS_CM); do \
+		[ -f "$$f" ] || missing_librime_deps=1; \
+	done; \
+	if [ ! -f $(LIBRIME_CM) ] || [ ! -f $(PLUM_MF) ] || [ ! -d $(SPARKLE_XP) ] || [ "$$missing_librime_deps" -eq 1 ]; then \
 		echo "*** Missing submodules, initializing..."; \
 		if [ -f .gitmodules ] || [ -d .git ]; then \
-			git submodule update --init --recursive 2>/dev/null || true; \
+			git submodule update --init --recursive; \
 		fi; \
 		[ ! -f $(LIBRIME_CM) ] && git clone --depth 1 https://github.com/rime/librime.git librime && cd librime && git submodule update --init --recursive --depth 1; \
 		[ ! -f $(PLUM_MF) ]    && git clone --depth 1 https://github.com/rime/plum.git plum; \
 		[ ! -d $(SPARKLE_XP) ] && git clone --depth 1 https://github.com/sparkle-project/Sparkle.git Sparkle; \
+		if [ -f $(LIBRIME_CM) ]; then \
+			git -C librime submodule update --init --recursive; \
+		fi; \
 	fi
 
 deps: setup
@@ -54,10 +68,10 @@ INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
 
 .PHONY: librime copy-rime-binaries
 
-$(RIME_LIBRARY):
+$(RIME_LIBRARY): | setup
 	$(MAKE) librime
 
-$(RIME_DEPS):
+$(RIME_DEPS): | setup
 	@mkdir -p .bin; \
 	printf '#!/bin/sh\nexec /usr/bin/python3 "$$@"\n' > .bin/python; \
 	chmod +x .bin/python
@@ -79,10 +93,10 @@ copy-rime-binaries:
 
 data: plum-data opencc-data
 
-$(PLUM_DATA):
+$(PLUM_DATA): | setup
 	$(MAKE) plum-data
 
-$(OPENCC_DATA):
+$(OPENCC_DATA): | setup
 	$(MAKE) opencc-data
 
 plum-data:
@@ -115,18 +129,18 @@ _=$() $()
 export CMAKE_OSX_ARCHITECTURES = $(subst $(_),;,$(ARCHS))
 endif
 
-ifdef MACOSX_DEPLOYMENT_TARGET
+MACOSX_DEPLOYMENT_TARGET ?= 13.0
+export MACOSX_DEPLOYMENT_TARGET
 BUILD_SETTINGS += MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)"
-endif
 
 BUILD_SETTINGS += COMPILER_INDEX_STORE_ENABLE=YES
 
-release: $(DEPS_CHECK)
+release: $(DEPS_CHECK) | setup
 	mkdir -p $(DERIVED_DATA_PATH)
 	bash package/add_data_files
 	xcodebuild -project Qiwo.xcodeproj -configuration Release -scheme Qiwo -derivedDataPath $(DERIVED_DATA_PATH) $(BUILD_SETTINGS) build
 
-debug: $(DEPS_CHECK)
+debug: $(DEPS_CHECK) | setup
 	mkdir -p $(DERIVED_DATA_PATH)
 	bash package/add_data_files
 	xcodebuild -project Qiwo.xcodeproj -configuration Debug -scheme Qiwo -derivedDataPath $(DERIVED_DATA_PATH)  $(BUILD_SETTINGS) build

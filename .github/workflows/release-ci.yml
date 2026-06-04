@@ -47,7 +47,7 @@ jobs:
       - name: Build Qiwo
         env:
           ARCHS: 'arm64 x86_64'
-        run: make release
+        run: ./action-build.sh release
 
       - name: Package installer script
         run: |
