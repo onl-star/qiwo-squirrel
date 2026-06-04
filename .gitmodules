@@ -13,5 +13,5 @@
 	branch = master
 [submodule "qiwo-sync-core"]
 	path = qiwo-sync-core
-	url = https://github.com/LeaWron/qiwo-sync-core.git
+	url = ../qiwo-sync-core.git
 	branch = main
