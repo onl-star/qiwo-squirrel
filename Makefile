@@ -1,7 +1,7 @@
 .PHONY: all install deps release debug setup
 
 all: release
-install: install-release
+install: local-install-disabled
 
 # ── Auto-setup: ensure submodules exist ────────────────────────
 
@@ -194,23 +194,20 @@ archive: package package/sign_update
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Qiwo.app
 
-.PHONY: permission-check install-debug install-release
+.PHONY: permission-check install-debug install-release local-install-disabled
 
 permission-check:
 	[ -w "$(DSTROOT)" ] || sudo chown ${USER} "$(DSTROOT)" 2>/dev/null || true
 	[ ! -d "$(SQUIRREL_APP_ROOT)" ] || [ -w "$(SQUIRREL_APP_ROOT)" ] || sudo chown -R ${USER} "$(SQUIRREL_APP_ROOT)" 2>/dev/null || true
 
-install-debug: debug permission-check
-	rm -rf "$(SQUIRREL_APP_ROOT)"
-	rm -rf "$(DSTROOT)/Squirrel.app"
-	cp -R $(DERIVED_DATA_PATH)/Build/Products/Debug/Qiwo.app "$(DSTROOT)"
-	DSTROOT="$(DSTROOT)" RIME_NO_PREBUILD=1 bash scripts/postinstall
+install-debug: local-install-disabled
 
-install-release: release permission-check
-	rm -rf "$(SQUIRREL_APP_ROOT)"
-	rm -rf "$(DSTROOT)/Squirrel.app"
-	cp -R $(DERIVED_DATA_PATH)/Build/Products/Release/Qiwo.app "$(DSTROOT)"
-	DSTROOT="$(DSTROOT)" bash scripts/postinstall
+install-release: local-install-disabled
+
+local-install-disabled:
+	@echo "Local source installation is disabled."
+	@echo "Download Qiwo-macOS-*.tar.gz from GitHub Actions or a release, extract it, then run ./install.sh inside the artifact."
+	@exit 1
 
 .PHONY: clean clean-deps
 

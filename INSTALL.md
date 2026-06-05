@@ -3,10 +3,8 @@
 ## 系统要求
 
 - macOS 13.0 或更高版本
-- Xcode 16+（用于编译）
-- Rust toolchain（用于构建同步工具）
 
-## 推荐安装方式
+## 安装方式
 
 正式产物由 GitHub Actions 构建。下载 `Qiwo-macOS-*.tar.gz` 后解压，运行包内脚本：
 
@@ -14,104 +12,18 @@
 ./install.sh
 ```
 
-该脚本会把同目录的 `Qiwo.app` 安装到 `/Library/Input Methods/` 并完成输入法注册，不依赖本地源码构建，也不会触发未签名 `.pkg` 安装流程。
+该脚本只安装同目录的 `Qiwo.app`，不进行本地源码构建，也不会触发未签名 `.pkg` 安装流程。
 
-## 源码构建依赖
+安装时会先停用并删除 `/Library/Input Methods/Qiwo.app` 和旧的 `Squirrel.app`，刷新 macOS 输入法与 LaunchServices 缓存，再复制新版本并重新注册输入源。
 
-```bash
-brew install cmake git rust
-
-# 安装 Xcode（通过 App Store）
-# 安装 Command Line Tools
-xcode-select --install
-```
-
-## 源码准备
-
-qiwo-squirrel 依赖三个子模块（librime、plum、Sparkle）。如果这些目录为空，需要先初始化：
+如果已配置过 WebDAV，脚本会询问是否保留 `~/Library/Rime/.qiwo-sync/webdav.plist` 和 Keychain 中的 WebDAV 密码。也可以用参数显式指定：
 
 ```bash
-cd qiwo-squirrel
-
-# 初始化子模块（首次构建必须）
-git submodule update --init --recursive
-
-# 如果 qiwo-squirrel 不是 git 仓库（是 copy 出来的），需要手动获取依赖
-if [ ! -f librime/CMakeLists.txt ]; then
-  git clone --depth 1 https://github.com/rime/librime.git librime
-fi
-if [ ! -f plum/Makefile ]; then
-  git clone --depth 1 https://github.com/rime/plum.git plum
-fi
-if [ ! -d Sparkle/Sparkle.xcodeproj ]; then
-  git clone --depth 1 https://github.com/sparkle-project/Sparkle.git Sparkle
-fi
+./install.sh --keep-webdav-settings
+./install.sh --reset-webdav-settings
 ```
 
-## 编译
-
-### 1. 构建 qiwo-rime-sync
-
-```bash
-cd qiwo-sync-core
-cargo build --release -p qiwo-rime-sync
-```
-
-### 2. 复制同步工具到应用包
-
-```bash
-mkdir -p qiwo-squirrel/qiwo-sync
-cp qiwo-sync-core/target/release/qiwo-rime-sync qiwo-squirrel/qiwo-sync/
-```
-
-### 3. 构建依赖
-
-```bash
-cd qiwo-squirrel
-
-# 构建 librime（如需要）
-make librime
-
-# 准备数据文件
-make data
-
-# 下载 Sparkle 框架
-make deps
-```
-
-### 4. 编译 Qiwo.app
-
-```bash
-cd qiwo-squirrel
-make release
-```
-
-编译产物位于 `build/Build/Products/Release/Qiwo.app`。
-
-## 安装
-
-```bash
-cd qiwo-squirrel
-
-# 安装到系统输入法目录
-sudo make install-release
-```
-
-或者手动安装：
-
-```bash
-# 复制到系统输入法目录
-sudo cp -R build/Build/Products/Release/Qiwo.app "/Library/Input Methods/"
-
-# 注册输入法
-"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --register-input-source
-
-# 启用输入法
-"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --enable-input-source
-
-# 选择输入法
-"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --select-input-source
-```
+源码目录里的 `install.sh` 和 `make install*` 目标已停用。当前安装链路只支持远程仓库 workflow/release 产物。
 
 ## 配置 WebDAV 同步
 

@@ -44,11 +44,9 @@ final class QiwoInstaller {
     let enabledInputModes = enabledModes()
     if !enabledInputModes.isEmpty {
       print("User already registered Qiwo method(s): \(enabledInputModes.map { $0.rawValue })")
-      // Already registered.
-      return
     }
-    TISRegisterInputSource(QiwoApp.appDir as CFURL)
-    print("Registered input source from \(QiwoApp.appDir)")
+    let error = TISRegisterInputSource(QiwoApp.appDir as CFURL)
+    print("Register \(error == noErr ? "succeeds" : "fails") for input source from \(QiwoApp.appDir)")
   }
 
   func enable(modes: [InputMode] = []) {
