@@ -252,21 +252,16 @@ final class QiwoSyncSettingsController: NSWindowController {
 
   @objc private func syncNow() {
     readFields()
-    let sync = QiwoWebDavSync(settings: settings, password: currentPassword)
     showStatus(NSLocalizedString("Syncing...", comment: ""), isError: false)
     syncButton.isEnabled = false
 
-    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-      let result = sync.run(mode: .sync)
+    NSApp.qiwoAppDelegate.qiwoWebDavSync(settings: settings, password: currentPassword) { [weak self] success, message in
       DispatchQueue.main.async {
         self?.syncButton.isEnabled = true
-        if result.success {
-          self?.showStatus(NSLocalizedString("Sync completed.", comment: ""), isError: false)
+        if success {
+          self?.showStatus(message, isError: false)
         } else {
-          let msg = result.output.isEmpty
-            ? String(format: NSLocalizedString("Sync failed (exit code %d).", comment: ""), result.exitCode)
-            : result.output
-          self?.showStatus(msg, isError: true)
+          self?.showStatus(message, isError: true)
         }
       }
     }

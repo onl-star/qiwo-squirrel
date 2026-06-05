@@ -11,6 +11,14 @@ struct QiwoWebDavSettings: Codable {
 
   static let defaultRemotePath = "qiwo-rime-sync"
 
+  var resolvedDeviceId: String {
+    let trimmed = deviceId.trimmingCharacters(in: .whitespacesAndNewlines)
+    if !trimmed.isEmpty {
+      return trimmed
+    }
+    return Host.current().localizedName ?? "mac"
+  }
+
   static func settingsFile() -> URL {
     let rimeDir = FileManager.default.homeDirectoryForCurrentUser
       .appendingPathComponent("Library/Rime/.qiwo-sync")

@@ -79,34 +79,56 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
 
   // MARK: - WebDAV sync
 
+  typealias WebDavSyncCompletion = (_ success: Bool, _ message: String) -> Void
+
   private var webdavSettingsController: QiwoSyncSettingsController?
   private var autoSyncTimer: Timer?
 
   func qiwoWebDavSync() {
     let settings = QiwoWebDavSettings.load()
     let password = QiwoKeychain.loadPassword()
-    let sync = QiwoWebDavSync(settings: settings, password: password)
+    runWebDavSync(settings: settings, password: password, notify: true)
+  }
 
+  func qiwoWebDavSync(
+    settings: QiwoWebDavSettings,
+    password: String,
+    completion: @escaping WebDavSyncCompletion
+  ) {
+    runWebDavSync(settings: settings, password: password, notify: false, completion: completion)
+  }
+
+  private func runWebDavSync(
+    settings: QiwoWebDavSettings,
+    password: String,
+    notify: Bool,
+    completion: WebDavSyncCompletion? = nil
+  ) {
     DispatchQueue.global(qos: .userInitiated).async { [self] in
-      QiwoApplicationDelegate.showMessage(msgText:
-        NSLocalizedString("WebDAV sync starting...", comment: ""))
+      if notify {
+        QiwoApplicationDelegate.showMessage(msgText:
+          NSLocalizedString("WebDAV sync starting...", comment: ""))
+      }
 
       // 1. 确保 installation.yaml 配置了 sync_dir 和 installation_id
+      let deviceId = settings.resolvedDeviceId
       QiwoInstallationHelper.ensure(
         rimeUserDir: QiwoApp.userDir.path,
-        deviceId: settings.deviceId
+        deviceId: deviceId
       )
       QiwoInstallationHelper.ensureSyncExportDir(
         rimeUserDir: QiwoApp.userDir.path,
-        deviceId: settings.deviceId
+        deviceId: deviceId
       )
 
       // 2. 先导出用户词库
       _ = self.rimeAPI.sync_user_data()
 
       // 3. WebDAV 同步（配置 + 用户词库）
+      let sync = QiwoWebDavSync(settings: settings, password: password)
       let result = sync.run(mode: .sync)
 
+      let message: String
       if result.success {
         // 4. 导入合并用户词库
         _ = self.rimeAPI.sync_user_data()
@@ -114,14 +136,17 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
         // 5. 重新部署
         self.deploy()
 
-        QiwoApplicationDelegate.showMessage(msgText:
-          NSLocalizedString("WebDAV sync completed.", comment: ""))
+        message = NSLocalizedString("WebDAV sync completed.", comment: "")
       } else {
-        let msg = result.output.isEmpty
+        message = result.output.isEmpty
           ? "WebDAV sync failed (exit code \(result.exitCode))."
           : result.output
-        QiwoApplicationDelegate.showMessage(msgText: msg)
       }
+
+      if notify {
+        QiwoApplicationDelegate.showMessage(msgText: message)
+      }
+      completion?(result.success, message)
     }
   }
 
@@ -147,11 +172,22 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
   }
 
   private func performAutoSync() {
+    let settings = QiwoWebDavSettings.load()
+    let password = QiwoKeychain.loadPassword()
+    let deviceId = settings.resolvedDeviceId
+
+    QiwoInstallationHelper.ensure(
+      rimeUserDir: QiwoApp.userDir.path,
+      deviceId: deviceId
+    )
+    QiwoInstallationHelper.ensureSyncExportDir(
+      rimeUserDir: QiwoApp.userDir.path,
+      deviceId: deviceId
+    )
+
     // 先导出词库
     _ = rimeAPI.sync_user_data()
 
-    let settings = QiwoWebDavSettings.load()
-    let password = QiwoKeychain.loadPassword()
     let sync = QiwoWebDavSync(settings: settings, password: password)
 
     DispatchQueue.global(qos: .utility).async {
@@ -323,6 +359,7 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
     let notifCenter = DistributedNotificationCenter.default()
     notifCenter.addObserver(forName: .init("QiwoReloadNotification"), object: nil, queue: nil, using: rimeNeedsReload)
     notifCenter.addObserver(forName: .init("QiwoSyncNotification"), object: nil, queue: nil, using: rimeNeedsSync)
+    notifCenter.addObserver(forName: .init("QiwoWebDavSyncNotification"), object: nil, queue: nil, using: webDavSyncRequested)
   }
 
   func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -403,6 +440,11 @@ private extension QiwoApplicationDelegate {
   func rimeNeedsSync(_: Notification) {
     print("Sync rime on demand.")
     self.syncUserData()
+  }
+
+  func webDavSyncRequested(_: Notification) {
+    print("WebDAV sync on demand.")
+    self.qiwoWebDavSync()
   }
 
   func createDirIfNotExist(path: URL) {

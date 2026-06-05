@@ -15,18 +15,17 @@ enum QiwoInstallationHelper {
     if FileManager.default.fileExists(atPath: file.path) {
       guard var content = try? String(contentsOf: file, encoding: .utf8) else { return }
 
-      let needsUpdate = !content.contains("sync_dir:")
       // 提取旧的 installation_id
-      if let match = try? NSRegularExpression(pattern: #"installation_id:\s*"([^"]*)""#)
+      if let match = try? NSRegularExpression(pattern: #"(?m)^installation_id:\s*(?:"([^"]*)"|([^\r\n]*))"#)
         .firstMatch(in: content, range: NSRange(content.startIndex..., in: content)),
-        let range = Range(match.range(at: 1), in: content) {
-        oldInstallationId = String(content[range])
+        let range = Range(match.range(at: match.range(at: 1).location != NSNotFound ? 1 : 2), in: content) {
+        oldInstallationId = String(content[range]).trimmingCharacters(in: .whitespacesAndNewlines)
       }
 
       // 替换或添加 installation_id
       if content.contains("installation_id:") {
         content = content.replacingOccurrences(
-          of: #"installation_id:\s*"[^"]*""#,
+          of: #"(?m)^installation_id:\s*(?:"[^"]*"|[^\r\n]*)"#,
           with: "installation_id: \"\(safeId)\"",
           options: .regularExpression
         )
@@ -35,7 +34,13 @@ enum QiwoInstallationHelper {
         content.append("\ninstallation_id: \"\(safeId)\"\n")
       }
 
-      if needsUpdate {
+      if content.contains("sync_dir:") {
+        content = content.replacingOccurrences(
+          of: #"(?m)^sync_dir:\s*(?:"[^"]*"|[^\r\n]*)"#,
+          with: "sync_dir: \"\(syncDir)\"",
+          options: .regularExpression
+        )
+      } else {
         content = content.trimmingCharacters(in: .whitespacesAndNewlines)
         content.append("\nsync_dir: \"\(syncDir)\"\n")
       }
@@ -89,11 +94,12 @@ enum QiwoInstallationHelper {
   }
 
   private static func makeSafeId(_ deviceId: String) -> String {
-    deviceId
+    let safeId = deviceId
       .replacingOccurrences(of: " ", with: "-")
       .replacingOccurrences(of: ":", with: "-")
       .replacingOccurrences(of: "\\", with: "-")
       .replacingOccurrences(of: "/", with: "-")
       .lowercased()
+    return safeId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "unknown" : safeId
   }
 }

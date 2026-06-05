@@ -40,9 +40,7 @@ final class QiwoWebDavSync {
       args.append(contentsOf: ["--username", settings.username])
     }
 
-    if !settings.deviceId.isEmpty {
-      args.append(contentsOf: ["--device-id", settings.deviceId])
-    }
+    args.append(contentsOf: ["--device-id", settings.resolvedDeviceId])
 
     var env = ProcessInfo.processInfo.environment
     if !password.isEmpty {

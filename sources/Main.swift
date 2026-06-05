@@ -81,14 +81,19 @@ struct QiwoApp {
           DistributedNotificationCenter.default().postNotificationName(.init("QiwoSyncNotification"), object: nil)
           return true
         case "--webdav-sync":
-          let settings = QiwoWebDavSettings.load()
-          let password = QiwoKeychain.loadPassword()
-          let sync = QiwoWebDavSync(settings: settings, password: password)
-          let result = sync.run(mode: .sync)
-          print(result.output)
+          DistributedNotificationCenter.default().postNotificationName(.init("QiwoWebDavSyncNotification"), object: nil)
           return true
         case "--webdav-sync-settings":
+          let app = NSApplication.shared
           let delegate = QiwoApplicationDelegate()
+          app.delegate = delegate
+          app.setActivationPolicy(.regular)
+          if let sharedSupportPath = Bundle.main.sharedSupportPath {
+            FileManager.default.changeCurrentDirectoryPath(sharedSupportPath)
+          }
+          delegate.setupRime()
+          delegate.startRime(fullCheck: false)
+          delegate.loadSettings()
           delegate.openWebDavSettings()
           RunLoop.current.run()
           return true
