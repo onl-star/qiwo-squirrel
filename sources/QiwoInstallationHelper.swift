@@ -10,6 +10,7 @@ enum QiwoInstallationHelper {
   static func ensure(rimeUserDir: String, deviceId: String) {
     let file = URL(fileURLWithPath: rimeUserDir).appendingPathComponent("installation.yaml")
     let safeId = makeSafeId(deviceId)
+    let syncDirPath = syncDirForYaml(rimeUserDir: rimeUserDir)
     var oldInstallationId: String?
 
     if FileManager.default.fileExists(atPath: file.path) {
@@ -37,12 +38,12 @@ enum QiwoInstallationHelper {
       if content.contains("sync_dir:") {
         content = content.replacingOccurrences(
           of: #"(?m)^sync_dir:\s*(?:"[^"]*"|[^\r\n]*)"#,
-          with: "sync_dir: \"\(syncDir)\"",
+          with: "sync_dir: \"\(syncDirPath)\"",
           options: .regularExpression
         )
       } else {
         content = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        content.append("\nsync_dir: \"\(syncDir)\"\n")
+        content.append("\nsync_dir: \"\(syncDirPath)\"\n")
       }
 
       try? content.write(to: file, atomically: true, encoding: .utf8)
@@ -59,7 +60,7 @@ enum QiwoInstallationHelper {
       distribution: "Qiwo"
       distribution_version: "1.0"
       installation_id: "\(safeId)"
-      sync_dir: "\(syncDir)"
+      sync_dir: "\(syncDirPath)"
       """
     try? yaml.write(to: file, atomically: true, encoding: .utf8)
   }
@@ -101,5 +102,12 @@ enum QiwoInstallationHelper {
       .replacingOccurrences(of: "/", with: "-")
       .lowercased()
     return safeId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "unknown" : safeId
+  }
+
+  private static func syncDirForYaml(rimeUserDir: String) -> String {
+    URL(fileURLWithPath: rimeUserDir)
+      .appendingPathComponent(syncDir)
+      .path
+      .replacingOccurrences(of: "\\", with: "/")
   }
 }
