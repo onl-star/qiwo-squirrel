@@ -12,6 +12,9 @@ keyboard_layout: last
 # for veteran chord-typist
 chord_duration: 0.1  # seconds
 
+input:
+  auto_commit_spacing: true
+
 # options: always | never | appropriate
 show_notifications_when: appropriate
 

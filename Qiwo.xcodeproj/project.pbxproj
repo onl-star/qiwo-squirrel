@@ -90,6 +90,8 @@
 		B397712B2BEE4C160093A49B /* QiwoPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712A2BEE4C160093A49B /* QiwoPanel.swift */; };
 		B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712C2BEEB39D0093A49B /* InputSource.swift */; };
 		B397712F2BEECBED0093A49B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712E2BEECBED0093A49B /* Main.swift */; };
+		C0A10F012F1C000100C0FFEE /* QiwoInputFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A10F022F1C000100C0FFEE /* QiwoInputFormatter.swift */; };
+		C0A10F042F1C000100C0FFEE /* libqiwo_input_format.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = C0A10F032F1C000100C0FFEE /* libqiwo_input_format.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		88D0027205BD4BCDA61BFFDC /* QiwoWebDavSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DDF6C0FBAF645419E82FE65 /* QiwoWebDavSettings.swift */; };
 		3125F370C8554288B985389E /* QiwoWebDavSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */; };
 		3A542DD4B11746BC89E5E3B0 /* QiwoSyncSettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */; };
@@ -214,6 +216,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */,
+				C0A10F042F1C000100C0FFEE /* libqiwo_input_format.dylib in Copy 3rd-party Frameworks */,
 				447765CA25C30E97002415AF /* Sparkle.framework in Copy 3rd-party Frameworks */,
 			);
 			name = "Copy 3rd-party Frameworks";
@@ -316,6 +319,8 @@
 		1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoWebDavSync.swift; path = sources/QiwoWebDavSync.swift; sourceTree = "<group>"; };
 		F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoSyncSettingsController.swift; path = sources/QiwoSyncSettingsController.swift; sourceTree = "<group>"; };
 		2D02EC0A320A4CE997C5F721 /* QiwoInstallationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoInstallationHelper.swift; path = sources/QiwoInstallationHelper.swift; sourceTree = "<group>"; };
+		C0A10F022F1C000100C0FFEE /* QiwoInputFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QiwoInputFormatter.swift; path = sources/QiwoInputFormatter.swift; sourceTree = "<group>"; };
+		C0A10F032F1C000100C0FFEE /* libqiwo_input_format.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libqiwo_input_format.dylib; path = lib/libqiwo_input_format.dylib; sourceTree = "<group>"; };
 
 		B39771302BEEE4540093A49B /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = InfoPlist.xcstrings; path = resources/InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B39771322BEEE4540093A49B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = resources/Localizable.xcstrings; sourceTree = "<group>"; };
@@ -352,6 +357,7 @@
 				1D3EEAD659BA419EA9BFCC2F /* QiwoWebDavSync.swift */,
 				2D02EC0A320A4CE997C5F721 /* QiwoInstallationHelper.swift */,
 				F04F88961D1B4255A10DB04E /* QiwoSyncSettingsController.swift */,
+				C0A10F022F1C000100C0FFEE /* QiwoInputFormatter.swift */,
 				B39771262BED9B250093A49B /* QiwoTheme.swift */,
 				B397712A2BEE4C160093A49B /* QiwoPanel.swift */,
 				B39771282BEDAF4A0093A49B /* QiwoView.swift */,
@@ -366,6 +372,7 @@
 			isa = PBXGroup;
 			children = (
 				44CD640915E2633D0021234E /* librime.1.dylib */,
+				C0A10F032F1C000100C0FFEE /* libqiwo_input_format.dylib */,
 				447765C725C30E6B002415AF /* Sparkle.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
@@ -538,6 +545,7 @@
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Qiwo" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
+				C0A10F052F1C000100C0FFEE /* Build qiwo_input_format */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
@@ -611,6 +619,31 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		C0A10F052F1C000100C0FFEE /* Build qiwo_input_format */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../qiwo-input-format-core/Cargo.toml",
+				"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/Cargo.toml",
+				"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/src/lib.rs",
+			);
+			name = "Build qiwo_input_format";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/lib/libqiwo_input_format.dylib",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\ncore_dir=\"$SRCROOT/../qiwo-input-format-core\"\nprofile=\"debug\"\ncargo_args=\"\"\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  profile=\"release\"\n  cargo_args=\"--release\"\nfi\ncd \"$core_dir\"\ncargo build -p qiwo-input-format $cargo_args\nmkdir -p \"$SRCROOT/lib\"\ncp \"$core_dir/target/$profile/libqiwo_input_format.dylib\" \"$SRCROOT/lib/libqiwo_input_format.dylib\"\ninstall_name_tool -id @rpath/libqiwo_input_format.dylib \"$SRCROOT/lib/libqiwo_input_format.dylib\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -625,6 +658,7 @@
 				3125F370C8554288B985389E /* QiwoWebDavSync.swift in Sources */,
 				B2E42895603A43C19685E158 /* QiwoInstallationHelper.swift in Sources */,
 				3A542DD4B11746BC89E5E3B0 /* QiwoSyncSettingsController.swift in Sources */,
+				C0A10F012F1C000100C0FFEE /* QiwoInputFormatter.swift in Sources */,
 				B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */,
 				B397712B2BEE4C160093A49B /* QiwoPanel.swift in Sources */,
 				B38E9B912BE9AE1E0036ABEF /* QiwoApplicationDelegate.swift in Sources */,
@@ -649,6 +683,7 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1.1.2;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -671,7 +706,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(SRCROOT)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
@@ -681,7 +716,10 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
-				OTHER_LDFLAGS = "-lrime.1";
+				OTHER_LDFLAGS = (
+					"-lrime.1",
+					"-lqiwo_input_format",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Qiwo;
 				PRODUCT_NAME = Qiwo;
 				SDKROOT = macosx;
@@ -705,6 +743,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1.1.2;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -726,7 +765,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(SRCROOT)/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
@@ -736,7 +775,10 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
-				OTHER_LDFLAGS = "-lrime.1";
+				OTHER_LDFLAGS = (
+					"-lrime.1",
+					"-lqiwo_input_format",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Qiwo;
 				PRODUCT_NAME = Qiwo;
 				SDKROOT = macosx;
@@ -785,9 +827,11 @@
 				HEADER_SEARCH_PATHS = (
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2)",
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3)",
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/include\"";
+				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3 = "\"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/include\"";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"@loader_path/../Frameworks",
 					"@loader_path/../Library/OpenSource",
@@ -844,9 +888,11 @@
 				HEADER_SEARCH_PATHS = (
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2)",
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3)",
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/include\"";
+				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3 = "\"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/include\"";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
 					/usr/lib,

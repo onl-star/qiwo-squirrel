@@ -576,7 +576,9 @@ private extension QiwoInputController {
   func commit(string: String) {
     guard let client = client else { return }
     // print("[DEBUG] commitString: \(string)")
-    client.insertText(string, replacementRange: .empty)
+    let autoCommitSpacing = NSApp.qiwoAppDelegate.config?.getBool("input/auto_commit_spacing") ?? true
+    let formattedString = QiwoInputFormatter.formatCommitText(string, enabled: autoCommitSpacing)
+    client.insertText(formattedString, replacementRange: .empty)
     preedit = ""
     hidePalettes()
   }
