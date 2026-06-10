@@ -57,6 +57,12 @@ export QIWO_DEVICE_ID="mac-main"
 - 输入法菜单 → **「WebDAV 同步」**
 - 或命令行：`"/Library/Input Methods/Qiwo.app/Contents/MacOS/Qiwo" --webdav-sync`
 
+## 中英数字自动空格
+
+默认开启提交文本格式化，会在汉字与半角英文、数字之间自动补空格。
+
+切换到齐我输入法后，按 `Ctrl` + `` ` `` 或 `F4` 打开 Rime 方案选单，可以切换 **「中英数字自动空格」**。该开关会立即影响后续上屏文本，并由 Rime 记住状态。
+
 ### 命令行选项
 
 ```bash

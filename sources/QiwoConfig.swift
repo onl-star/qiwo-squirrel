@@ -65,6 +65,10 @@ final class QiwoConfig {
     return baseConfig?.getBool(option)
   }
 
+  func autoCommitSpacingEnabled() -> Bool {
+    return getUserBool("var/option/auto_commit_spacing") ?? getBool("input/auto_commit_spacing") ?? true
+  }
+
   func getDouble(_ option: String) -> CGFloat? {
     if let cachedValue = cachedValue(of: Double.self, forKey: option) {
       return cachedValue
@@ -116,6 +120,22 @@ final class QiwoConfig {
 }
 
 private extension QiwoConfig {
+  func getUserBool(_ option: String) -> Bool? {
+    var userConfig = RimeConfig()
+    guard rimeAPI.user_config_open("user", &userConfig) else {
+      return nil
+    }
+    defer {
+      _ = rimeAPI.config_close(&userConfig)
+    }
+
+    var value = false
+    if rimeAPI.config_get_bool(&userConfig, option, &value) {
+      return value
+    }
+    return nil
+  }
+
   func cachedValue<T>(of: T.Type, forKey key: String) -> T? {
     return cache[key] as? T
   }

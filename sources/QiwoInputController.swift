@@ -373,6 +373,7 @@ private extension QiwoInputController {
     schemaId = ""
 
     if session != 0 {
+      rimeAPI.set_option(session, "auto_commit_spacing", fallbackAutoCommitSpacingEnabled())
       updateAppOptions()
     }
   }
@@ -576,11 +577,21 @@ private extension QiwoInputController {
   func commit(string: String) {
     guard let client = client else { return }
     // print("[DEBUG] commitString: \(string)")
-    let autoCommitSpacing = NSApp.qiwoAppDelegate.config?.getBool("input/auto_commit_spacing") ?? true
+    let autoCommitSpacing: Bool
+    if session != 0 && rimeAPI.find_session(session) {
+      autoCommitSpacing = rimeAPI.get_option(session, "auto_commit_spacing")
+    } else {
+      autoCommitSpacing = fallbackAutoCommitSpacingEnabled()
+    }
     let formattedString = QiwoInputFormatter.formatCommitText(string, enabled: autoCommitSpacing)
     client.insertText(formattedString, replacementRange: .empty)
     preedit = ""
     hidePalettes()
+  }
+
+  private func fallbackAutoCommitSpacingEnabled() -> Bool {
+    return NSApp.qiwoAppDelegate.config?.autoCommitSpacingEnabled() ??
+      (NSApp.qiwoAppDelegate.config?.getBool("input/auto_commit_spacing") ?? true)
   }
 
   func show(preedit: String, selRange: NSRange, caretPos: Int) {
