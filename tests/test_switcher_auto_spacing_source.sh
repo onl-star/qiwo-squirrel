@@ -22,9 +22,19 @@ assert_grep() {
 
 config="qiwo-squirrel/sources/QiwoConfig.swift"
 controller="qiwo-squirrel/sources/QiwoInputController.swift"
+delegate="qiwo-squirrel/sources/QiwoApplicationDelegate.swift"
+makefile="qiwo-squirrel/Makefile"
+action_install="qiwo-squirrel/action-install.sh"
+project="qiwo-squirrel/Qiwo.xcodeproj/project.pbxproj"
+add_data_files="qiwo-squirrel/package/add_data_files"
 
 assert_file "$config"
 assert_file "$controller"
+assert_file "$delegate"
+assert_file "$makefile"
+assert_file "$action_install"
+assert_file "$project"
+assert_file "$add_data_files"
 
 assert_grep "func[[:space:]]+autoCommitSpacingEnabled\\(" "$config"
 assert_grep "user_config_open\\(\"user\"" "$config"
@@ -46,5 +56,16 @@ commit_body="$(awk '/func commit\(string: String\)/,/func show\(preedit:/' "$con
   fail "commit(string:) does not format committed text"
 [[ "$commit_body" == *"insertText(formattedString"* ]] ||
   fail "commit(string:) does not insert formattedString"
+
+assert_grep "QIWO_FROST_ROOT[[:space:]]*\\?=[[:space:]]*\\.\\./qiwo-ibusr/rime-frost" "$makefile"
+assert_grep "copy-rime-frost-data" "$makefile"
+assert_grep "copy-rime-frost-data" "$action_install"
+assert_grep "rime-frost in Copy Shared Support Files" "$project"
+assert_grep "data/rime-frost" "$project"
+assert_grep "data/rime-frost" "$add_data_files"
+assert_grep "initializeBundledFrostIfNeeded\\(" "$delegate"
+assert_grep "rime_frost\\.schema\\.yaml" "$delegate"
+assert_grep "default\\.custom\\.yaml" "$delegate"
+assert_grep "schema: rime_frost" "$delegate"
 
 echo "PASS: macOS switcher auto spacing source checks"

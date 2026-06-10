@@ -259,6 +259,7 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
   func setupRime() {
     createDirIfNotExist(path: QiwoApp.userDir)
     createDirIfNotExist(path: QiwoApp.logDir)
+    initializeBundledFrostIfNeeded()
     // swiftlint:disable identifier_name
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
     let context_object = Unmanaged.passUnretained(self).toOpaque()
@@ -274,6 +275,26 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
     qiwoTraits.setCString(Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as! String, to: \.distribution_version)
     qiwoTraits.setCString("rime.qiwo", to: \.app_name)
     rimeAPI.setup(&qiwoTraits)
+  }
+
+  func initializeBundledFrostIfNeeded() {
+    guard let sharedSupportPath = Bundle.main.sharedSupportPath else {
+      return
+    }
+
+    let fileManager = FileManager.default
+    let bundledFrostDir = URL(fileURLWithPath: sharedSupportPath, isDirectory: true)
+      .appendingPathComponent("rime-frost", isDirectory: true)
+    let bundledSchema = bundledFrostDir.appendingPathComponent("rime_frost.schema.yaml")
+    guard fileManager.fileExists(atPath: bundledSchema.path()) else {
+      return
+    }
+
+    let userSchema = QiwoApp.userDir.appendingPathComponent("rime_frost.schema.yaml")
+    if !fileManager.fileExists(atPath: userSchema.path()) {
+      copyBundledFrostResources(from: bundledFrostDir, to: QiwoApp.userDir)
+    }
+    ensureDefaultFrostCustomYaml()
   }
 
   func startRime(fullCheck: Bool) {
@@ -455,6 +476,70 @@ private extension QiwoApplicationDelegate {
       } catch {
         print("Error creating user data directory: \(path.path())")
       }
+    }
+  }
+
+  private func copyBundledFrostResources(from bundledFrostDir: URL, to userDir: URL) {
+    let fileManager = FileManager.default
+    let basePath = bundledFrostDir.path().hasSuffix("/") ?
+      bundledFrostDir.path() :
+      bundledFrostDir.path() + "/"
+
+    guard let enumerator = fileManager.enumerator(
+      at: bundledFrostDir,
+      includingPropertiesForKeys: [.isDirectoryKey],
+      options: [.skipsHiddenFiles]
+    ) else {
+      return
+    }
+
+    for case let source as URL in enumerator {
+      let sourcePath = source.path()
+      guard sourcePath.hasPrefix(basePath) else {
+        continue
+      }
+
+      let relativePath = String(sourcePath.dropFirst(basePath.count))
+      if relativePath == ".git" || relativePath.hasPrefix(".git/") {
+        continue
+      }
+
+      let target = userDir.appendingPathComponent(relativePath)
+      do {
+        let values = try source.resourceValues(forKeys: [.isDirectoryKey])
+        if values.isDirectory == true {
+          try fileManager.createDirectory(at: target, withIntermediateDirectories: true)
+        } else if !fileManager.fileExists(atPath: target.path()) {
+          try fileManager.createDirectory(
+            at: target.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+          )
+          try fileManager.copyItem(at: source, to: target)
+        }
+      } catch {
+        print("Error copying bundled rime-frost resource \(relativePath): \(error.localizedDescription)")
+      }
+    }
+  }
+
+  private func ensureDefaultFrostCustomYaml() {
+    let file = QiwoApp.userDir.appendingPathComponent("default.custom.yaml")
+    let fileManager = FileManager.default
+    if let attributes = try? fileManager.attributesOfItem(atPath: file.path()),
+       let size = attributes[.size] as? NSNumber,
+       size.uint64Value > 0 {
+      return
+    }
+
+    let content = """
+    patch:
+      schema_list:
+        - schema: rime_frost
+    """
+    do {
+      try content.write(to: file, atomically: true, encoding: .utf8)
+    } catch {
+      print("Error creating default.custom.yaml: \(error.localizedDescription)")
     }
   }
 }

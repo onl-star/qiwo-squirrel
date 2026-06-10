@@ -51,12 +51,14 @@ PLUM_DATA = bin/rime-install \
 	data/plum/default.yaml \
 	data/plum/symbols.yaml \
 	data/plum/essay.txt
+QIWO_FROST_ROOT ?= ../qiwo-ibusr/rime-frost
+RIME_FROST_DATA = data/rime-frost/rime_frost.schema.yaml
 OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/TSPhrases.ocd2 \
 	data/opencc/t2s.json
 SPARKLE_FRAMEWORK = Frameworks/Sparkle.framework
 PACKAGE = package/Qiwo.pkg
-DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
+DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(RIME_FROST_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
 
 OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
@@ -89,7 +91,7 @@ copy-rime-binaries:
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_deployer
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_dict_manager
 
-.PHONY: data plum-data opencc-data copy-plum-data copy-opencc-data
+.PHONY: data plum-data opencc-data copy-plum-data copy-rime-frost-data copy-opencc-data
 
 data: plum-data opencc-data
 
@@ -98,6 +100,9 @@ $(PLUM_DATA): | setup
 
 $(OPENCC_DATA): | setup
 	$(MAKE) opencc-data
+
+$(RIME_FROST_DATA):
+	$(MAKE) copy-rime-frost-data
 
 plum-data:
 	if [ -f plum/Makefile ]; then $(MAKE) -C plum; fi
@@ -114,6 +119,13 @@ copy-plum-data:
 	mkdir -p data/plum
 	cp $(PLUM_DATA_OUTPUT) data/plum/
 	cp $(RIME_PACKAGE_INSTALLER) bin/
+
+copy-rime-frost-data:
+	test -f "$(QIWO_FROST_ROOT)/rime_frost.schema.yaml"
+	rm -rf data/rime-frost
+	mkdir -p data/rime-frost
+	cp -R "$(QIWO_FROST_ROOT)/." data/rime-frost/
+	rm -rf data/rime-frost/.git
 
 copy-opencc-data:
 	mkdir -p data/opencc
@@ -218,6 +230,7 @@ clean:
 	rm lib/* > /dev/null 2>&1 || true
 	rm lib/rime-plugins/* > /dev/null 2>&1 || true
 	rm data/plum/* > /dev/null 2>&1 || true
+	rm -rf data/rime-frost > /dev/null 2>&1 || true
 	rm data/opencc/* > /dev/null 2>&1 || true
 
 clean-package:

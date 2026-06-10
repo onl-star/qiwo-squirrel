@@ -9,6 +9,7 @@ bin/*
 lib/*
 data/opencc/
 data/plum/
+data/rime-frost/
 download/
 package/Squirrel*.pkg
 package/sign/*.pem

@@ -48,3 +48,5 @@ if [ -f plum/Makefile ]; then
     rime_dir=plum/output bash plum/rime-install ${SQUIRREL_BUNDLED_RECIPES}
   fi
 fi
+
+make copy-rime-frost-data

@@ -59,11 +59,33 @@ frameworks_phase_entry() {
     echo "2C6B9F${id}2BCD086700E327DF /* ${lib} in Copy Rime plugins */,"
 }
 
+frost_obj_entry='AA7F3A302C10000100C0FFEE /* rime-frost in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = AA7F3A312C10000100C0FFEE /* rime-frost */; };'
+frost_copy_files_entry='AA7F3A302C10000100C0FFEE /* rime-frost in Copy Shared Support Files */,'
+frost_file_ref_entry='AA7F3A312C10000100C0FFEE /* rime-frost */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "rime-frost"; path = "data/rime-frost"; sourceTree = "<group>"; };'
+frost_group_entry='AA7F3A312C10000100C0FFEE /* rime-frost */,'
+
 add_line() {
     local search="^[[:space:]]*$(sed 's/\//\\\//g; s/\*/\\*/g' <<< "${1}")\$"
     sed -i '' "/${search}/a\\
 ${2}
 " "${project_file}"
+}
+
+add_frost_folder() {
+    if [ ! -f data/rime-frost/rime_frost.schema.yaml ]; then
+        return
+    fi
+    if grep -Fq 'rime-frost in Copy Shared Support Files' "${project_file}"
+    then
+        echo "found rime-frost"
+        return
+    fi
+
+    echo "adding rime-frost to ${project_file}"
+    add_line '442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };' "${frost_obj_entry}"
+    add_line '442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */,' "${frost_copy_files_entry}"
+    add_line '442B5B871570C37200370DEA /* squirrel.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = squirrel.yaml; path = data/squirrel.yaml; sourceTree = "<group>"; };' "${frost_file_ref_entry}"
+    add_line '7B5488A71D2DAC9D0056A1BE /* plum */,' "${frost_group_entry}"
 }
 
 add_file() {
@@ -130,6 +152,8 @@ do
     echo "adding ${file} to ${project_file}"
     add_file "${file}"
 done
+
+add_frost_folder
 
 for lib in "${lib_files[@]}"
 do
