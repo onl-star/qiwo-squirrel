@@ -15,19 +15,21 @@ LIBRIME_DEPS_CM = \
 	librime/deps/yaml-cpp/CMakeLists.txt
 PLUM_MF = plum/Makefile
 SPARKLE_XP = Sparkle/Sparkle.xcodeproj
+RIME_FROST_SCHEMA = rime-frost/rime_frost.schema.yaml
 
 setup:
 	@missing_librime_deps=0; \
 	for f in $(LIBRIME_DEPS_CM); do \
 		[ -f "$$f" ] || missing_librime_deps=1; \
 	done; \
-	if [ ! -f $(LIBRIME_CM) ] || [ ! -f $(PLUM_MF) ] || [ ! -d $(SPARKLE_XP) ] || [ "$$missing_librime_deps" -eq 1 ]; then \
+	if [ ! -f $(LIBRIME_CM) ] || [ ! -f $(PLUM_MF) ] || [ ! -d $(SPARKLE_XP) ] || [ ! -f $(RIME_FROST_SCHEMA) ] || [ "$$missing_librime_deps" -eq 1 ]; then \
 		echo "*** Missing submodules, initializing..."; \
 		if [ -f .gitmodules ] || [ -d .git ]; then \
 			git submodule update --init --recursive; \
 		fi; \
 		[ ! -f $(LIBRIME_CM) ] && git clone --depth 1 https://github.com/rime/librime.git librime && cd librime && git submodule update --init --recursive --depth 1; \
 		[ ! -f $(PLUM_MF) ]    && git clone --depth 1 https://github.com/rime/plum.git plum; \
+		[ ! -f $(RIME_FROST_SCHEMA) ] && git clone --depth 1 https://github.com/gaboolic/rime-frost.git rime-frost; \
 		[ ! -d $(SPARKLE_XP) ] && git clone --depth 1 https://github.com/sparkle-project/Sparkle.git Sparkle; \
 		if [ -f $(LIBRIME_CM) ]; then \
 			git -C librime submodule update --init --recursive; \
@@ -51,7 +53,7 @@ PLUM_DATA = bin/rime-install \
 	data/plum/default.yaml \
 	data/plum/symbols.yaml \
 	data/plum/essay.txt
-QIWO_FROST_ROOT ?= ../qiwo-ibusr/rime-frost
+QIWO_FROST_ROOT ?= rime-frost
 RIME_FROST_DATA = data/rime-frost/rime_frost.schema.yaml
 OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/TSPhrases.ocd2 \

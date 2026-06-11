@@ -40,7 +40,7 @@ make copy-rime-binaries copy-opencc-data
 
 echo "SQUIRREL_BUNDLED_RECIPES=${SQUIRREL_BUNDLED_RECIPES}"
 
-git submodule update --init plum 2>/dev/null || true
+git submodule update --init plum rime-frost 2>/dev/null || true
 if [ -f plum/Makefile ]; then
   make -C plum
   make copy-plum-data

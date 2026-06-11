@@ -295,6 +295,7 @@ final class QiwoApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandar
       copyBundledFrostResources(from: bundledFrostDir, to: QiwoApp.userDir)
     }
     ensureDefaultFrostCustomYaml()
+    ensureFrostSchemaCustomYamls(from: bundledFrostDir)
   }
 
   func startRime(fullCheck: Bool) {
@@ -535,11 +536,53 @@ private extension QiwoApplicationDelegate {
     patch:
       schema_list:
         - schema: rime_frost
+      switcher/hotkeys/@next: F4
+      switcher/save_options/@next: auto_commit_spacing
     """
     do {
       try content.write(to: file, atomically: true, encoding: .utf8)
     } catch {
       print("Error creating default.custom.yaml: \(error.localizedDescription)")
+    }
+  }
+
+  private func ensureFrostSchemaCustomYamls(from bundledFrostDir: URL) {
+    let fileManager = FileManager.default
+    guard let entries = try? fileManager.contentsOfDirectory(
+      at: bundledFrostDir,
+      includingPropertiesForKeys: nil,
+      options: [.skipsHiddenFiles]
+    ) else {
+      return
+    }
+
+    let content = """
+    patch:
+      switches/@next:
+        name: auto_commit_spacing
+        states: [ 关闭中英数字自动空格, 开启中英数字自动空格 ]
+    """
+
+    for entry in entries {
+      let fileName = entry.lastPathComponent
+      guard fileName.hasPrefix("rime_frost"),
+            fileName.hasSuffix(".schema.yaml") else {
+        continue
+      }
+
+      let schemaID = String(fileName.dropLast(".schema.yaml".count))
+      let customFile = QiwoApp.userDir.appendingPathComponent("\(schemaID).custom.yaml")
+      if let attributes = try? fileManager.attributesOfItem(atPath: customFile.path()),
+         let size = attributes[.size] as? NSNumber,
+         size.uint64Value > 0 {
+        continue
+      }
+
+      do {
+        try content.write(to: customFile, atomically: true, encoding: .utf8)
+      } catch {
+        print("Error creating \(schemaID).custom.yaml: \(error.localizedDescription)")
+      }
     }
   }
 }

@@ -63,6 +63,8 @@ export QIWO_DEVICE_ID="mac-main"
 
 切换到齐我输入法后，按 `Ctrl` + `` ` `` 或 `F4` 打开 Rime 方案选单，可以切换 **「中英数字自动空格」**。该开关会立即影响后续上屏文本，并由 Rime 记住状态。
 
+`rime-frost` 保持官方方案资源；齐我启动时会在用户 Rime 目录生成 `default.custom.yaml` 和 `rime_frost*.custom.yaml` 补丁来注入这个开关，实际格式化由 `qiwo-input-format-core` 执行。
+
 ### 命令行选项
 
 ```bash
