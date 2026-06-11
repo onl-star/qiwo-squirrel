@@ -85,7 +85,7 @@ assert_grep "\\$\\(SRCROOT\\)/lib" "$project"
 assert_grep "-lqiwo_input_format" "$project"
 assert_grep "libqiwo_input_format\\.dylib" "$project"
 assert_grep "path[[:space:]]*=[[:space:]]*qiwo-input-format-core" "$gitmodules"
-assert_grep "url[[:space:]]*=[[:space:]]*https://github\\.com/onl-star/qiwo-input-format-core\\.git" "$gitmodules"
+assert_grep "url[[:space:]]*=[[:space:]]*https://github\\.com/LeaWron/qiwo-input-format-core\\.git" "$gitmodules"
 for workflow in "$commit_ci" "$pull_request_ci" "$release_ci"; do
   assert_contains "Contents/MacOS/qiwo-sync/qiwo-rime-sync" "$workflow"
   if grep -Fq "Contents/Resources/qiwo-sync/qiwo-rime-sync" "$workflow"; then
