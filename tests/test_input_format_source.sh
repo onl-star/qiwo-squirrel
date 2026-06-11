@@ -50,7 +50,12 @@ assert_grep "^[[:space:]]+auto_commit_spacing:[[:space:]]*true([[:space:]]*(#.*)
 commit_body="$(awk '/func commit\(string: String\)/,/func show\(preedit:/' "$controller")"
 [[ "$commit_body" == *"QiwoInputFormatter"* ]] || fail "commit(string:) does not call QiwoInputFormatter"
 [[ "$commit_body" == *'getBool("input/auto_commit_spacing") ?? true'* ]] || fail "commit(string:) does not default input/auto_commit_spacing to true"
+[[ "$commit_body" == *"beforeCursor: surroundingText?.beforeCursor"* ]] || fail "commit(string:) does not pass before-cursor context"
+[[ "$commit_body" == *"afterCursor: surroundingText?.afterCursor"* ]] || fail "commit(string:) does not pass after-cursor context"
 [[ "$commit_body" == *"insertText(formattedString"* ]] || fail "commit(string:) does not insert formattedString"
+assert_grep "markedRange\\(\\)" "$controller"
+assert_grep "selectedRange\\(\\)" "$controller"
+assert_grep "attributedSubstring\\(from:" "$controller"
 
 assert_grep "QiwoInputFormatter\\.swift" "$project"
 assert_grep "\\$\\(SRCROOT\\)/qiwo-input-format-core/qiwo-input-format/include" "$project"

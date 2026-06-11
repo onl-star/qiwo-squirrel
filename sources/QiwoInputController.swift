@@ -29,6 +29,11 @@ final class QiwoInputController: IMKInputController {
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
 
+  private struct CommitSurroundingText {
+    let beforeCursor: String?
+    let afterCursor: String?
+  }
+
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
     guard let event = event else { return false }
@@ -583,10 +588,69 @@ private extension QiwoInputController {
     } else {
       autoCommitSpacing = fallbackAutoCommitSpacingEnabled()
     }
-    let formattedString = QiwoInputFormatter.formatCommitText(string, enabled: autoCommitSpacing)
+    let surroundingText = autoCommitSpacing ? surroundingTextForCommit(client: client) : nil
+    let formattedString = QiwoInputFormatter.formatCommitText(
+      string,
+      beforeCursor: surroundingText?.beforeCursor,
+      afterCursor: surroundingText?.afterCursor,
+      enabled: autoCommitSpacing
+    )
     client.insertText(formattedString, replacementRange: .empty)
     preedit = ""
     hidePalettes()
+  }
+
+  private func surroundingTextForCommit(client: IMKTextInput) -> CommitSurroundingText? {
+    let range = commitReplacementRange(client: client)
+    guard range.location != NSNotFound else {
+      return nil
+    }
+
+    let beforeCursor = clientTextBefore(range.location, client: client)
+    let afterCursor = clientTextAfter(range.location + range.length, client: client)
+    return CommitSurroundingText(beforeCursor: beforeCursor, afterCursor: afterCursor)
+  }
+
+  private func commitReplacementRange(client: IMKTextInput) -> NSRange {
+    let markedRange = client.markedRange()
+    if markedRange.location != NSNotFound {
+      return markedRange
+    }
+
+    let selectedRange = client.selectedRange()
+    if selectedRange.location != NSNotFound {
+      return selectedRange
+    }
+
+    return NSRange(location: NSNotFound, length: 0)
+  }
+
+  private func clientTextBefore(_ location: Int, client: IMKTextInput) -> String? {
+    guard location > 0 else {
+      return nil
+    }
+
+    let start = max(0, location - 8)
+    return attributedText(in: NSRange(location: start, length: location - start), client: client)
+  }
+
+  private func clientTextAfter(_ location: Int, client: IMKTextInput) -> String? {
+    let documentLength = client.length()
+    guard documentLength != NSNotFound, location < documentLength else {
+      return nil
+    }
+
+    return attributedText(in: NSRange(location: location, length: min(8, documentLength - location)), client: client)
+  }
+
+  private func attributedText(in range: NSRange, client: IMKTextInput) -> String? {
+    guard range.location != NSNotFound,
+          range.length > 0,
+          let attributedText = client.attributedSubstring(from: range) else {
+      return nil
+    }
+
+    return attributedText.string
   }
 
   private func fallbackAutoCommitSpacingEnabled() -> Bool {
