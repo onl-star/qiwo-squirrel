@@ -47,7 +47,7 @@ jobs:
           VERSION=$(git describe --always)
           PACKAGE_DIR="package/Qiwo-macOS-${VERSION}"
           ARCHIVE="package/Qiwo-macOS-${VERSION}.tar.gz"
-          test -x build/Build/Products/Release/Qiwo.app/Contents/Resources/qiwo-sync/qiwo-rime-sync
+          test -x build/Build/Products/Release/Qiwo.app/Contents/MacOS/qiwo-sync/qiwo-rime-sync
           rm -rf "${PACKAGE_DIR}" "${ARCHIVE}"
           mkdir -p "${PACKAGE_DIR}"
           ditto build/Build/Products/Release/Qiwo.app "${PACKAGE_DIR}/Qiwo.app"

@@ -32,6 +32,9 @@ config="qiwo-squirrel/data/squirrel.yaml"
 controller="qiwo-squirrel/sources/QiwoInputController.swift"
 project="qiwo-squirrel/Qiwo.xcodeproj/project.pbxproj"
 gitmodules="qiwo-squirrel/.gitmodules"
+commit_ci="qiwo-squirrel/.github/workflows/commit-ci.yml"
+pull_request_ci="qiwo-squirrel/.github/workflows/pull-request-ci.yml"
+release_ci="qiwo-squirrel/.github/workflows/release-ci.yml"
 
 assert_file "$wrapper"
 assert_file "$bridging_header"
@@ -39,6 +42,9 @@ assert_file "$config"
 assert_file "$controller"
 assert_file "$project"
 assert_file "$gitmodules"
+assert_file "$commit_ci"
+assert_file "$pull_request_ci"
+assert_file "$release_ci"
 
 assert_grep "struct[[:space:]]+QiwoInputFormatter|enum[[:space:]]+QiwoInputFormatter|final[[:space:]]+class[[:space:]]+QiwoInputFormatter" "$wrapper"
 assert_grep "QiwoInputFormatOptions" "$wrapper"
@@ -80,6 +86,12 @@ assert_grep "-lqiwo_input_format" "$project"
 assert_grep "libqiwo_input_format\\.dylib" "$project"
 assert_grep "path[[:space:]]*=[[:space:]]*qiwo-input-format-core" "$gitmodules"
 assert_grep "url[[:space:]]*=[[:space:]]*https://github\\.com/onl-star/qiwo-input-format-core\\.git" "$gitmodules"
+for workflow in "$commit_ci" "$pull_request_ci" "$release_ci"; do
+  assert_contains "Contents/MacOS/qiwo-sync/qiwo-rime-sync" "$workflow"
+  if grep -Fq "Contents/Resources/qiwo-sync/qiwo-rime-sync" "$workflow"; then
+    fail "$workflow still checks the sync tool under Contents/Resources"
+  fi
+done
 if grep -q "\\$\\(SRCROOT\\)/\\.\\./qiwo-input-format-core" "$project"; then
   fail "project still references sibling qiwo-input-format-core instead of the submodule"
 fi
