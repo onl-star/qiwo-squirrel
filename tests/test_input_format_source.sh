@@ -25,12 +25,14 @@ bridging_header="qiwo-squirrel/sources/Qiwo-Bridging-Header.h"
 config="qiwo-squirrel/data/squirrel.yaml"
 controller="qiwo-squirrel/sources/QiwoInputController.swift"
 project="qiwo-squirrel/Qiwo.xcodeproj/project.pbxproj"
+gitmodules="qiwo-squirrel/.gitmodules"
 
 assert_file "$wrapper"
 assert_file "$bridging_header"
 assert_file "$config"
 assert_file "$controller"
 assert_file "$project"
+assert_file "$gitmodules"
 
 assert_grep "struct[[:space:]]+QiwoInputFormatter|enum[[:space:]]+QiwoInputFormatter|final[[:space:]]+class[[:space:]]+QiwoInputFormatter" "$wrapper"
 assert_grep "QiwoInputFormatOptions" "$wrapper"
@@ -51,11 +53,16 @@ commit_body="$(awk '/func commit\(string: String\)/,/func show\(preedit:/' "$con
 [[ "$commit_body" == *"insertText(formattedString"* ]] || fail "commit(string:) does not insert formattedString"
 
 assert_grep "QiwoInputFormatter\\.swift" "$project"
-assert_grep "qiwo-input-format-core/qiwo-input-format/include" "$project"
+assert_grep "\\$\\(SRCROOT\\)/qiwo-input-format-core/qiwo-input-format/include" "$project"
 assert_grep "cargo build -p qiwo-input-format" "$project"
 assert_grep "install_name_tool -id @rpath/libqiwo_input_format\\.dylib" "$project"
 assert_grep "\\$\\(SRCROOT\\)/lib" "$project"
 assert_grep "-lqiwo_input_format" "$project"
 assert_grep "libqiwo_input_format\\.dylib" "$project"
+assert_grep "path[[:space:]]*=[[:space:]]*qiwo-input-format-core" "$gitmodules"
+assert_grep "url[[:space:]]*=[[:space:]]*https://github\\.com/onl-star/qiwo-input-format-core\\.git" "$gitmodules"
+if grep -q "\\$\\(SRCROOT\\)/\\.\\./qiwo-input-format-core" "$project"; then
+  fail "project still references sibling qiwo-input-format-core instead of the submodule"
+fi
 
 echo "PASS: macOS input format source integration checks"

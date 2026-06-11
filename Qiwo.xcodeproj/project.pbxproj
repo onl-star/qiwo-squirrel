@@ -632,9 +632,9 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../qiwo-input-format-core/Cargo.toml",
-				"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/Cargo.toml",
-				"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/src/lib.rs",
+				"$(SRCROOT)/qiwo-input-format-core/Cargo.toml",
+				"$(SRCROOT)/qiwo-input-format-core/qiwo-input-format/Cargo.toml",
+				"$(SRCROOT)/qiwo-input-format-core/qiwo-input-format/src/lib.rs",
 			);
 			name = "Build qiwo_input_format";
 			outputFileListPaths = (
@@ -644,7 +644,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\ncore_dir=\"$SRCROOT/../qiwo-input-format-core\"\nprofile=\"debug\"\ncargo_args=\"\"\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  profile=\"release\"\n  cargo_args=\"--release\"\nfi\ncd \"$core_dir\"\ncargo build -p qiwo-input-format $cargo_args\nmkdir -p \"$SRCROOT/lib\"\ncp \"$core_dir/target/$profile/libqiwo_input_format.dylib\" \"$SRCROOT/lib/libqiwo_input_format.dylib\"\ninstall_name_tool -id @rpath/libqiwo_input_format.dylib \"$SRCROOT/lib/libqiwo_input_format.dylib\"\n";
+			shellScript = "set -e\ncore_dir=\"$SRCROOT/qiwo-input-format-core\"\nprofile=\"debug\"\ncargo_args=\"\"\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  profile=\"release\"\n  cargo_args=\"--release\"\nfi\ncd \"$core_dir\"\ncargo build -p qiwo-input-format $cargo_args\nmkdir -p \"$SRCROOT/lib\"\ncp \"$core_dir/target/$profile/libqiwo_input_format.dylib\" \"$SRCROOT/lib/libqiwo_input_format.dylib\"\ninstall_name_tool -id @rpath/libqiwo_input_format.dylib \"$SRCROOT/lib/libqiwo_input_format.dylib\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -835,7 +835,7 @@
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/include\"";
-				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3 = "\"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/include\"";
+				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3 = "\"$(SRCROOT)/qiwo-input-format-core/qiwo-input-format/include\"";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"@loader_path/../Frameworks",
 					"@loader_path/../Library/OpenSource",
@@ -896,7 +896,7 @@
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/include\"";
-				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3 = "\"$(SRCROOT)/../qiwo-input-format-core/qiwo-input-format/include\"";
+				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_3 = "\"$(SRCROOT)/qiwo-input-format-core/qiwo-input-format/include\"";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
 					/usr/lib,
