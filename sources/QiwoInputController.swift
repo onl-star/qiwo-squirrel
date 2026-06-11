@@ -133,6 +133,9 @@ final class QiwoInputController: IMKInputController {
           let rimeModifiers = QiwoKeycode.osxModifiersToRime(modifiers: modifiers)
           handled = processKey(rimeKeycode, modifiers: rimeModifiers)
           rimeUpdate()
+          if !handled {
+            handled = commitDirectInputIfNeeded(event: event, text: event.characters)
+          }
         }
       }
 
@@ -651,6 +654,48 @@ private extension QiwoInputController {
     }
 
     return attributedText.string
+  }
+
+  private func commitDirectInputIfNeeded(event: NSEvent, text: String?) -> Bool {
+    guard preedit.isEmpty,
+          let client = client,
+          let text = text,
+          text.count == 1,
+          let scalar = text.unicodeScalars.first,
+          scalar.value >= 0x21,
+          scalar.value <= 0x7e else {
+      return false
+    }
+
+    let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+    if modifiers.contains(.command) || modifiers.contains(.control) || modifiers.contains(.option) {
+      return false
+    }
+
+    let autoCommitSpacing: Bool
+    if session != 0 && rimeAPI.find_session(session) {
+      autoCommitSpacing = rimeAPI.get_option(session, "auto_commit_spacing")
+    } else {
+      autoCommitSpacing = fallbackAutoCommitSpacingEnabled()
+    }
+    guard autoCommitSpacing else {
+      return false
+    }
+
+    let surroundingText = surroundingTextForCommit(client: client)
+    let formattedString = QiwoInputFormatter.formatCommitText(
+      text,
+      beforeCursor: surroundingText?.beforeCursor,
+      afterCursor: surroundingText?.afterCursor,
+      enabled: true
+    )
+    guard formattedString != text else {
+      return false
+    }
+
+    client.insertText(formattedString, replacementRange: .empty)
+    hidePalettes()
+    return true
   }
 
   private func fallbackAutoCommitSpacingEnabled() -> Bool {
