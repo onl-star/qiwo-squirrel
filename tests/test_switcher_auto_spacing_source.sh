@@ -81,6 +81,8 @@ assert_grep "initializeBundledFrostIfNeeded\\(" "$delegate"
 assert_grep "rime_frost\\.schema\\.yaml" "$delegate"
 assert_grep "default\\.custom\\.yaml" "$delegate"
 assert_grep "schema: rime_frost" "$delegate"
+assert_grep "ensureCustomYaml" "$delegate"
+assert_grep "appendYamlPatchEntries" "$delegate"
 assert_grep "switcher/hotkeys/@next: F4" "$delegate"
 assert_grep "switcher/save_options/@next: auto_commit_spacing" "$delegate"
 assert_grep "fileName\\.hasPrefix\\(\"rime_frost\"\\)" "$delegate"
@@ -88,5 +90,8 @@ assert_grep "schemaID.*custom\\.yaml" "$delegate"
 assert_grep "switches/@next" "$delegate"
 assert_grep "关闭中英数字自动空格" "$delegate"
 assert_grep "开启中英数字自动空格" "$delegate"
+if grep -q "size\\.uint64Value[[:space:]]*>[[:space:]]*0" "$delegate"; then
+  fail "custom.yaml generation still skips non-empty existing files"
+fi
 
 echo "PASS: macOS switcher auto spacing source checks"

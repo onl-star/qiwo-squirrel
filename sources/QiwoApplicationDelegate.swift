@@ -523,27 +523,92 @@ private extension QiwoApplicationDelegate {
     }
   }
 
-  private func ensureDefaultFrostCustomYaml() {
-    let file = QiwoApp.userDir.appendingPathComponent("default.custom.yaml")
+  private func ensureCustomYaml(
+    file: URL,
+    initialContent: String,
+    patchEntries: [String],
+    requiredNeedles: [String]
+  ) {
     let fileManager = FileManager.default
-    if let attributes = try? fileManager.attributesOfItem(atPath: file.path()),
-       let size = attributes[.size] as? NSNumber,
-       size.uint64Value > 0 {
+    let existingContent = (try? String(contentsOf: file, encoding: .utf8)) ?? ""
+    let hasContent = fileManager.fileExists(atPath: file.path()) &&
+      !existingContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+
+    if !hasContent {
+      do {
+        try initialContent.write(to: file, atomically: true, encoding: .utf8)
+      } catch {
+        print("Error creating \(file.lastPathComponent): \(error.localizedDescription)")
+      }
       return
     }
 
-    let content = """
+    let missingPatchEntries = zip(requiredNeedles, patchEntries)
+      .compactMap { pair in existingContent.contains(pair.0) ? nil : pair.1 }
+    guard !missingPatchEntries.isEmpty else {
+      return
+    }
+
+    let updatedContent = appendYamlPatchEntries(missingPatchEntries, to: existingContent)
+    do {
+      try updatedContent.write(to: file, atomically: true, encoding: .utf8)
+    } catch {
+      print("Error updating \(file.lastPathComponent): \(error.localizedDescription)")
+    }
+  }
+
+  private func appendYamlPatchEntries(_ entries: [String], to content: String) -> String {
+    var lines = content.components(separatedBy: "\n")
+    if lines.last == "" {
+      lines.removeLast()
+    }
+
+    guard let patchIndex = lines.firstIndex(where: { $0 == "patch:" }) else {
+      var output = content
+      if !output.hasSuffix("\n") {
+        output += "\n"
+      }
+      if !output.isEmpty {
+        output += "\n"
+      }
+      output += "patch:\n"
+      output += entries.joined(separator: "\n")
+      output += "\n"
+      return output
+    }
+
+    let insertionIndex = lines[(patchIndex + 1)...].firstIndex { line in
+      !line.isEmpty &&
+        !line.hasPrefix(" ") &&
+        !line.hasPrefix("\t") &&
+        !line.hasPrefix("#")
+    } ?? lines.endIndex
+
+    lines.insert(contentsOf: entries, at: insertionIndex)
+    return lines.joined(separator: "\n") + "\n"
+  }
+
+  private func ensureDefaultFrostCustomYaml() {
+    let file = QiwoApp.userDir.appendingPathComponent("default.custom.yaml")
+    let initialContent = """
     patch:
       schema_list:
         - schema: rime_frost
       switcher/hotkeys/@next: F4
       switcher/save_options/@next: auto_commit_spacing
     """
-    do {
-      try content.write(to: file, atomically: true, encoding: .utf8)
-    } catch {
-      print("Error creating default.custom.yaml: \(error.localizedDescription)")
-    }
+    ensureCustomYaml(
+      file: file,
+      initialContent: initialContent,
+      patchEntries: [
+        "  switcher/hotkeys/@next: F4",
+        "  switcher/save_options/@next: auto_commit_spacing"
+      ],
+      requiredNeedles: [
+        "switcher/hotkeys/@next: F4",
+        "switcher/save_options/@next: auto_commit_spacing"
+      ]
+    )
   }
 
   private func ensureFrostSchemaCustomYamls(from bundledFrostDir: URL) {
@@ -556,8 +621,13 @@ private extension QiwoApplicationDelegate {
       return
     }
 
-    let content = """
+    let initialContent = """
     patch:
+      switches/@next:
+        name: auto_commit_spacing
+        states: [ 关闭中英数字自动空格, 开启中英数字自动空格 ]
+    """
+    let patchEntry = """
       switches/@next:
         name: auto_commit_spacing
         states: [ 关闭中英数字自动空格, 开启中英数字自动空格 ]
@@ -572,17 +642,12 @@ private extension QiwoApplicationDelegate {
 
       let schemaID = String(fileName.dropLast(".schema.yaml".count))
       let customFile = QiwoApp.userDir.appendingPathComponent("\(schemaID).custom.yaml")
-      if let attributes = try? fileManager.attributesOfItem(atPath: customFile.path()),
-         let size = attributes[.size] as? NSNumber,
-         size.uint64Value > 0 {
-        continue
-      }
-
-      do {
-        try content.write(to: customFile, atomically: true, encoding: .utf8)
-      } catch {
-        print("Error creating \(schemaID).custom.yaml: \(error.localizedDescription)")
-      }
+      ensureCustomYaml(
+        file: customFile,
+        initialContent: initialContent,
+        patchEntries: [patchEntry],
+        requiredNeedles: ["auto_commit_spacing"]
+      )
     }
   }
 }
