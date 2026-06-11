@@ -644,7 +644,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\ncore_dir=\"$SRCROOT/qiwo-input-format-core\"\nprofile=\"debug\"\ncargo_args=\"\"\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  profile=\"release\"\n  cargo_args=\"--release\"\nfi\ncd \"$core_dir\"\ncargo build -p qiwo-input-format $cargo_args\nmkdir -p \"$SRCROOT/lib\"\ncp \"$core_dir/target/$profile/libqiwo_input_format.dylib\" \"$SRCROOT/lib/libqiwo_input_format.dylib\"\ninstall_name_tool -id @rpath/libqiwo_input_format.dylib \"$SRCROOT/lib/libqiwo_input_format.dylib\"\n";
+			shellScript = "set -e\ncore_dir=\"$SRCROOT/qiwo-input-format-core\"\nprofile=\"debug\"\ncargo_args=\"\"\nif [ \"$CONFIGURATION\" = \"Release\" ]; then\n  profile=\"release\"\n  cargo_args=\"--release\"\nfi\nmkdir -p \"$SRCROOT/lib\"\ncd \"$core_dir\"\nbuild_archs=\"${ARCHS:-$(uname -m)}\"\nbuilt_libs=\"\"\nbuilt_count=0\nfor arch in $build_archs; do\n  case \"$arch\" in\n    arm64) rust_target=\"aarch64-apple-darwin\" ;;\n    x86_64) rust_target=\"x86_64-apple-darwin\" ;;\n    *) echo \"Unsupported qiwo_input_format arch: $arch\" >&2; exit 1 ;;\n  esac\n  cargo build -p qiwo-input-format $cargo_args --target \"$rust_target\"\n  built_libs=\"$built_libs $core_dir/target/$rust_target/$profile/libqiwo_input_format.dylib\"\n  built_count=$((built_count + 1))\ndone\nif [ \"$built_count\" -gt 1 ]; then\n  lipo -create $built_libs -output \"$SRCROOT/lib/libqiwo_input_format.dylib\"\nelse\n  cp $built_libs \"$SRCROOT/lib/libqiwo_input_format.dylib\"\nfi\ninstall_name_tool -id @rpath/libqiwo_input_format.dylib \"$SRCROOT/lib/libqiwo_input_format.dylib\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

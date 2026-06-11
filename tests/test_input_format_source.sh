@@ -20,6 +20,12 @@ assert_grep() {
   grep -Eq -- "$pattern" "$path" || fail "missing pattern in $path: $pattern"
 }
 
+assert_contains() {
+  local text="$1"
+  local path="$2"
+  grep -Fq -- "$text" "$path" || fail "missing text in $path: $text"
+}
+
 wrapper="qiwo-squirrel/sources/QiwoInputFormatter.swift"
 bridging_header="qiwo-squirrel/sources/Qiwo-Bridging-Header.h"
 config="qiwo-squirrel/data/squirrel.yaml"
@@ -63,6 +69,11 @@ assert_grep "attributedSubstring\\(from:" "$controller"
 assert_grep "QiwoInputFormatter\\.swift" "$project"
 assert_grep "\\$\\(SRCROOT\\)/qiwo-input-format-core/qiwo-input-format/include" "$project"
 assert_grep "cargo build -p qiwo-input-format" "$project"
+assert_contains 'build_archs=\"${ARCHS:-$(uname -m)}\"' "$project"
+assert_contains 'aarch64-apple-darwin' "$project"
+assert_contains 'x86_64-apple-darwin' "$project"
+assert_contains 'cargo build -p qiwo-input-format $cargo_args --target \"$rust_target\"' "$project"
+assert_contains 'lipo -create $built_libs -output \"$SRCROOT/lib/libqiwo_input_format.dylib\"' "$project"
 assert_grep "install_name_tool -id @rpath/libqiwo_input_format\\.dylib" "$project"
 assert_grep "\\$\\(SRCROOT\\)/lib" "$project"
 assert_grep "-lqiwo_input_format" "$project"
