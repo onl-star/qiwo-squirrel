@@ -72,6 +72,18 @@ assert_grep "markedRange\\(\\)" "$controller"
 assert_grep "selectedRange\\(\\)" "$controller"
 assert_grep "attributedSubstring\\(from:" "$controller"
 
+direct_body="$(awk '/private func commitDirectInputIfNeeded/,/private func fallbackAutoCommitSpacingEnabled/' "$controller")"
+[[ "$direct_body" == *"surroundingTextForDirectInput(client: client)"* ]] ||
+  fail "direct input fallback must use selected-range surrounding context"
+[[ "$direct_body" != *"surroundingTextForCommit(client: client)"* ]] ||
+  fail "direct input fallback must not reuse commit replacement context"
+
+direct_context_body="$(awk '/private func surroundingTextForDirectInput/,/private func surroundingText\(client:/' "$controller")"
+[[ "$direct_context_body" == *"client.selectedRange()"* ]] ||
+  fail "direct input surrounding context must be based on selectedRange()"
+[[ "$direct_context_body" != *"commitReplacementRange(client: client)"* ]] ||
+  fail "direct input surrounding context must not prefer markedRange()"
+
 assert_grep "QiwoInputFormatter\\.swift" "$project"
 assert_grep "\\$\\(SRCROOT\\)/qiwo-input-format-core/qiwo-input-format/include" "$project"
 assert_grep "cargo build -p qiwo-input-format" "$project"

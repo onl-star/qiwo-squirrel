@@ -605,6 +605,15 @@ private extension QiwoInputController {
 
   private func surroundingTextForCommit(client: IMKTextInput) -> CommitSurroundingText? {
     let range = commitReplacementRange(client: client)
+    return surroundingText(client: client, around: range)
+  }
+
+  private func surroundingTextForDirectInput(client: IMKTextInput) -> CommitSurroundingText? {
+    let range = client.selectedRange()
+    return surroundingText(client: client, around: range)
+  }
+
+  private func surroundingText(client: IMKTextInput, around range: NSRange) -> CommitSurroundingText? {
     guard range.location != NSNotFound else {
       return nil
     }
@@ -682,7 +691,7 @@ private extension QiwoInputController {
       return false
     }
 
-    let surroundingText = surroundingTextForCommit(client: client)
+    let surroundingText = surroundingTextForDirectInput(client: client)
     let formattedString = QiwoInputFormatter.formatCommitText(
       text,
       beforeCursor: surroundingText?.beforeCursor,
